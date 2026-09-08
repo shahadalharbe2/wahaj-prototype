@@ -5,6 +5,16 @@ import { WahajLogo, Button } from '../../components';
 import { AgentCard } from './AgentCard';
 import { HumanReviewModal } from './HumanReviewModal';
 import { DOMAIN_META } from '../../data/analysisRules';
+import { ServicePathPanel } from '../../features/ServicePath/ServicePathPanel.jsx';
+import {
+  HEALTH_SERVICE_CONFIG,
+  PHYSICAL_SERVICE_CONFIG,
+  PSYCHOLOGICAL_SERVICE_CONFIG,
+  SOCIAL_SERVICE_CONFIG,
+  FINANCIAL_SERVICE_CONFIG,
+  getExperienceServiceConfig,
+  getOrchestratorServiceConfig,
+} from '../../features/ServicePath/servicePathConfigs.js';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 function loadAnalysis() {
@@ -25,6 +35,20 @@ const DOMAIN_LABELS_SHORT = {
   experience:    'الخبرات',
   overall:       'الأولويات',
 };
+
+/** Build per-agent service path config map from analysis + raw answers */
+function buildServicePathConfigs(agents, rawAnswers) {
+  const raw = rawAnswers ?? {};
+  const expConfig = getExperienceServiceConfig(raw[16], raw[17] ?? []);
+  return {
+    health:        HEALTH_SERVICE_CONFIG,
+    physical:      PHYSICAL_SERVICE_CONFIG,
+    psychological: PSYCHOLOGICAL_SERVICE_CONFIG,
+    social:        SOCIAL_SERVICE_CONFIG,
+    financial:     FINANCIAL_SERVICE_CONFIG,
+    experience:    expConfig,
+  };
+}
 
 export function ResultsDashboard() {
   const navigate = useNavigate();
@@ -50,10 +74,16 @@ export function ResultsDashboard() {
     );
   }
 
-  const { overall, agents, crossInsights, priorities, escalations } = analysis;
+  const { overall, agents, crossInsights, priorities, escalations, rawAnswers } = analysis;
 
   // Determine top-level escalation for banner
   const hasHumanReview = escalations.length > 0;
+
+  // Build service path configs (personalized for experience agent)
+  const servicePathConfigs = buildServicePathConfigs(agents, rawAnswers);
+
+  // Orchestrator cross-agent service suggestion
+  const orchestratorService = getOrchestratorServiceConfig(agents, rawAnswers ?? {});
 
   return (
     <main className={styles.page}>
@@ -119,6 +149,7 @@ export function ResultsDashboard() {
                 key={agent.id}
                 agent={agent}
                 onHumanReview={(a) => setReviewAgent(a)}
+                servicePathConfig={servicePathConfigs[agent.id] ?? null}
               />
             ))}
           </div>
@@ -154,7 +185,23 @@ export function ResultsDashboard() {
           </section>
         )}
 
-        {/* ── SECTION D: Priorities ─────────────────────────────────────── */}
+        {/* ── SECTION D: Orchestrator cross-agent service ───────────────── */}
+        <section className={styles.section} aria-labelledby="orch-service-heading">
+          <h2 id="orch-service-heading" className={styles.sectionHeading}>
+            أبرز خدمة يوصي بها وهج لك
+          </h2>
+          <p className={styles.sectionDesc}>
+            بعد تحليل جميع المجالات الستة، اختار منسق وهج الذكي الخدمة التي تخدم أكثر من جانب في تقييمك.
+          </p>
+          <ServicePathPanel
+            config={orchestratorService.config}
+            agentHasHumanReview={false}
+            domainsServed={orchestratorService.domainsServed}
+            crossAgentReason={orchestratorService.crossAgentReason}
+          />
+        </section>
+
+        {/* ── SECTION E: Priorities ─────────────────────────────────────── */}
         {priorities.length > 0 && (
           <section className={styles.section} aria-labelledby="priorities-heading">
             <h2 id="priorities-heading" className={styles.sectionHeading}>

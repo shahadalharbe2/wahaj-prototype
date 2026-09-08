@@ -10,6 +10,7 @@ import {
 } from '../../components';
 import { useAssessment } from '../../context/useAssessment';
 import { QUESTIONS, SECTIONS } from '../../data/questions';
+import { startNewAssessmentSession } from '../../services/beneficiaryCounter.js';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -31,6 +32,15 @@ export function AssessmentScreen() {
     goNext,
     goPrev,
   } = useAssessment();
+
+  // Generate a fresh session ID when the user first enters the assessment.
+  // This runs once on mount — it is the canonical "new journey has started" signal.
+  // The session ID is later checked by countCompletedAssessment() to prevent
+  // double-counting if the user refreshes or revisits results.
+  useEffect(() => {
+    startNewAssessmentSession();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Validation errors: { forSection: number, ids: Set<number> }
   // Storing the section index alongside the IDs means errors are automatically

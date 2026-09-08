@@ -1,11 +1,30 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import styles from './WelcomeScreen.module.css';
 import { WahajLogo, Button, AreaPill, AssessmentCard } from '../../components';
+import { getBeneficiaryCount, COUNT_KEY } from '../../services/beneficiaryCounter.js';
 
 const AREAS = ['health', 'activity', 'mental', 'social', 'financial', 'purpose'];
 
 export function WelcomeScreen() {
   const navigate = useNavigate();
+
+  // Lazy initializer runs on every true mount.
+  // WelcomeScreen is keyed in App.jsx so React Router remounts it on
+  // every navigation to "/", meaning this initializer always reads the
+  // latest localStorage value — no setState-in-effect needed.
+  const [count, setCount] = useState(() => getBeneficiaryCount());
+
+  // Cross-tab sync only (same-tab updates are handled by remounting via key)
+  useEffect(() => {
+    function handleStorage(e) {
+      if (e.key === COUNT_KEY) {
+        setCount(getBeneficiaryCount());
+      }
+    }
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   return (
     <main className={styles.page}>
@@ -53,6 +72,15 @@ export function WelcomeScreen() {
           <AssessmentCard />
 
           <div className={styles.ctaActions}>
+            {/* ── Live beneficiary counter ── */}
+            <div className={styles.counterBadge} aria-live="polite" aria-atomic="true">
+              <span className={styles.counterNumber}>
+                {count.toLocaleString('ar-SA')}
+              </span>
+              <span className={styles.counterLabel}>مستفيد أكمل تقييم وهج</span>
+              <span className={styles.counterSub}>وينضم مستفيدون جدد مع كل رحلة مكتملة</span>
+            </div>
+
             <Button
               size="lg"
               variant="primary"
@@ -73,6 +101,20 @@ export function WelcomeScreen() {
       {/* ===== Footer ===== */}
       <footer className={styles.footer}>
         <span>وهج © {new Date().getFullYear()}</span>
+        <Link
+          to="/dashboard"
+          className={styles.dashboardLink}
+          aria-label="لوحة مؤشرات وهج — للمسؤولين وصانعي القرار"
+        >
+          📊 لوحة المؤشرات
+        </Link>
+        <Link
+          to="/admin-dashboard"
+          className={styles.dashboardLink}
+          aria-label="لوحة الأثر والمتابعة — للمسؤولين"
+        >
+          📋 الأثر والمتابعة
+        </Link>
       </footer>
     </main>
   );

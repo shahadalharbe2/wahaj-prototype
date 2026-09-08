@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styles from './AgentCard.module.css';
-import { PhysicalServicePath } from '../../features/PhysicalServicePath/PhysicalServicePath.jsx';
+import { ServicePathPanel } from '../../features/ServicePath/ServicePathPanel.jsx';
 
 const TYPE_CONFIG = {
   stable:      { label: 'مستقر',          dot: '🟢' },
@@ -103,7 +103,7 @@ function EvidencePanel({ agent }) {
 }
 
 // ── Main AgentCard ────────────────────────────────────────────────────────────
-export function AgentCard({ agent, onHumanReview }) {
+export function AgentCard({ agent, onHumanReview, servicePathConfig }) {
   const [expanded, setExpanded] = useState(false);
   const cardType = resolveCardType(agent);
   const typeConf = TYPE_CONFIG[agent.type] ?? TYPE_CONFIG.stable;
@@ -192,12 +192,14 @@ export function AgentCard({ agent, onHumanReview }) {
         </button>
       )}
 
-      {/* ── Physical / Mobility service path — prototype feature ── */}
-      {/* Shown ONLY for the physical agent. Safety note rendered first
-          when humanReview is true, so professional review is always seen
-          before the service checklist. */}
-      {agent.id === 'physical' && (
-        <PhysicalServicePath agentHasHumanReview={agent.humanReview ?? false} />
+      {/* ── Service path panel (all agents) ── */}
+      {/* servicePathConfig is passed from ResultsDashboard via AgentCard prop.
+          Safety note inside the panel is shown first when humanReview is true. */}
+      {servicePathConfig && (
+        <ServicePathPanel
+          config={servicePathConfig}
+          agentHasHumanReview={agent.humanReview ?? false}
+        />
       )}
     </article>
   );

@@ -4,6 +4,7 @@ import styles from './AnalysisScreen.module.css';
 import { WahajLogo } from '../../components';
 import { useAssessment } from '../../context/useAssessment';
 import { runAnalysis } from '../../services/analysisService';
+import { countCompletedAssessment } from '../../services/beneficiaryCounter.js';
 
 const AGENTS = [
   { id: 'health',        label: 'الصحة والأمراض المزمنة',  icon: '🫀' },
@@ -77,7 +78,13 @@ export function AnalysisScreen() {
     // Navigate after all done
     timers.push(
       setTimeout(() => {
-        sessionStorage.setItem('wahaj_analysis', JSON.stringify(result));
+        // Increment the beneficiary counter for this newly completed assessment.
+        // countCompletedAssessment() is idempotent — safe even if this timer fires twice.
+        countCompletedAssessment();
+
+        // Also persist raw answers so ResultsDashboard can personalize service paths
+        const toStore = { ...result, rawAnswers: payload.raw };
+        sessionStorage.setItem('wahaj_analysis', JSON.stringify(toStore));
         navigate('/results');
       }, orchStart + ORCH_DURATION + NAV_DELAY)
     );

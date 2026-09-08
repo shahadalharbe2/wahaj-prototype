@@ -159,7 +159,7 @@ function Checklist({ record, onToggle, onOpenClubs }) {
 
 // ─── Reassessment note sub-component ─────────────────────────────────────────
 function ReassessmentNote({ record }) {
-  const { completed, total } = getChecklistProgress(record);
+  const { completed, total: _total } = getChecklistProgress(record);
   const hasStarted = completed > 0;
 
   // Format due date if available

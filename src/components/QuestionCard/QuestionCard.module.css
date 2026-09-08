@@ -1,0 +1,143 @@
+.card {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+  width: 100%;
+}
+
+/* ─── Question text ─────────────────────────────────────────────────────────── */
+.questionText {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-4);
+}
+
+.hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  margin-top: calc(-1 * var(--space-2));
+}
+
+/* ─── Error ─────────────────────────────────────────────────────────────────── */
+.error {
+  font-size: var(--font-size-sm);
+  color: #C0392B;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: #FDF0EF;
+  border: 1px solid #F5C6C2;
+}
+
+/* ─── Options list ──────────────────────────────────────────────────────────── */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ─── Single option item ────────────────────────────────────────────────────── */
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-base),
+    background-color var(--transition-base);
+  user-select: none;
+}
+
+.option:hover {
+  border-color: var(--color-brand-accent);
+  background-color: var(--color-brand-glow);
+}
+
+.option--selected {
+  border-color: var(--color-brand-primary);
+  background-color: var(--color-surface-alt);
+}
+
+.option--selected:hover {
+  border-color: var(--color-brand-primary);
+}
+
+/* Visually hide the native input but keep it accessible */
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.optionIndicator {
+  font-size: 18px;
+  line-height: 1;
+  color: var(--color-brand-primary);
+  flex-shrink: 0;
+  min-width: 20px;
+  text-align: center;
+}
+
+.optionLabel {
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+}
+
+.option--selected .optionLabel {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand-primary);
+}
+
+/* ─── Optional textarea ─────────────────────────────────────────────────────── */
+.textFieldWrap {
+  margin-top: var(--space-5);
+}
+
+.textField {
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-primary);
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  resize: vertical;
+  direction: rtl;
+  text-align: right;
+  transition: border-color var(--transition-base);
+}
+
+.textField::placeholder {
+  color: var(--color-text-muted);
+}
+
+.textField:focus {
+  outline: none;
+  border-color: var(--color-brand-primary);
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .card {
+    padding: var(--space-5) var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
+  .questionText {
+    font-size: var(--font-size-base);
+  }
+}

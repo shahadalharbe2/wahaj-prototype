@@ -1,0 +1,172 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+/* ===== Header ===== */
+.header {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(255, 253, 249, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+/* ===== Main content ===== */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  text-align: center;
+  gap: var(--space-6);
+  max-width: 560px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== Glow mark ===== */
+.glowWrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.glowOuter {
+  position: absolute;
+  inset: -36px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    circle,
+    rgba(248, 166, 35, 0.18) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.glowRing3,
+.glowRing2,
+.glowRing1,
+.checkmark {
+  position: absolute;
+  border-radius: var(--radius-full);
+}
+
+.glowRing3 {
+  inset: 0;
+  background: var(--color-brand-light);
+  opacity: 0.38;
+}
+
+.glowRing2 {
+  inset: 15%;
+  background: var(--color-brand-accent);
+  opacity: 0.6;
+}
+
+.glowRing1 {
+  inset: 30%;
+  background: var(--color-brand-primary);
+}
+
+.checkmark {
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: #fff;
+  background: transparent;
+  font-weight: var(--font-weight-bold);
+}
+
+/* ===== Text ===== */
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+}
+
+.subtitle {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  max-width: 400px;
+}
+
+/* ===== Analysis placeholder panel ===== */
+.analysisPlaceholder {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6) var(--space-8);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.agentRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: center;
+}
+
+.agentDot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.agentPulse {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-accent);
+  opacity: 0.7;
+}
+
+.agentLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.analysisText {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  text-align: center;
+}
+
+/* ===== Secondary actions ===== */
+.secondaryActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .content {
+    padding: var(--space-8) var(--space-4);
+    gap: var(--space-5);
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+  }
+
+  .analysisPlaceholder {
+    padding: var(--space-5) var(--space-5);
+  }
+}

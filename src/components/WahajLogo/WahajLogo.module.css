@@ -1,0 +1,58 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* ---- Size variants ---- */
+.logo--sm .mark  { width: 28px; height: 28px; }
+.logo--sm .wordmark { font-size: 20px; }
+
+.logo--md .mark  { width: 40px; height: 40px; }
+.logo--md .wordmark { font-size: 28px; }
+
+.logo--lg .mark  { width: 56px; height: 56px; }
+.logo--lg .wordmark { font-size: 40px; }
+
+/* ---- Brand mark ---- */
+.mark {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mark span {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+}
+
+.ring3 {
+  background: var(--color-brand-light);
+  opacity: 0.35;
+  inset: 0 !important;
+}
+
+.ring2 {
+  background: var(--color-brand-accent);
+  opacity: 0.55;
+  inset: 18% !important;
+}
+
+.ring1 {
+  background: var(--color-brand-primary);
+  inset: 35% !important;
+}
+
+.core {
+  background: #FFF8EE;
+  inset: 52% !important;
+}
+
+/* ---- Wordmark ---- */
+.wordmark {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-primary);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}

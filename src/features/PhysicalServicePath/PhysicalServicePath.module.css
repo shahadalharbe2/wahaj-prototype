@@ -1,0 +1,729 @@
+/* ════════════════════════════════════════════════════════════════════════
+   PhysicalServicePath.module.css
+   Physical / Mobility service-path feature — all styles self-contained.
+   Uses the Wahaj design token system from global.css.
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* ── Outer panel ─────────────────────────────────────────────────────── */
+.pathPanel {
+  margin-top: var(--space-5);
+  border-top: 2px solid var(--color-border);
+  padding-top: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ── Safety-first banner ─────────────────────────────────────────────── */
+.safetyFirst {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  background: #FFF3E0;
+  border: 1.5px solid #E8873D;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+.safetyIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.safetyText {
+  font-size: var(--font-size-sm);
+  color: #7A4000;
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Panel header ────────────────────────────────────────────────────── */
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.panelIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.panelTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-1);
+  line-height: var(--line-height-tight);
+}
+
+.panelSubtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--line-height-relaxed);
+}
+
+/* ── Progress summary ────────────────────────────────────────────────── */
+.progressSummary {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.progressSummaryText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.progressCount {
+  color: var(--color-brand-primary);
+  font-size: var(--font-size-base);
+}
+
+/* ── Progress track ──────────────────────────────────────────────────── */
+.progressTrack {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.progressStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  position: relative;
+  min-width: 0;
+}
+
+.progressStep:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 11px;
+  right: calc(-50% + 10px);
+  left: calc(50% + 10px);
+  height: 1.5px;
+  background: var(--color-border);
+}
+
+.progressStep--done:not(:last-child)::after {
+  background: #3A7D44;
+}
+
+.progressStep--active:not(:last-child)::after {
+  background: var(--color-brand-light);
+}
+
+.progressDot {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border);
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.progressStep--done .progressDot {
+  background: #3A7D44;
+  border-color: #3A7D44;
+  color: #fff;
+}
+
+.progressStep--active .progressDot {
+  background: var(--color-brand-primary);
+  border-color: var(--color-brand-primary);
+  box-shadow: 0 0 0 3px rgba(201, 107, 43, 0.18);
+}
+
+.progressStep--pending .progressDot {
+  opacity: 0.4;
+}
+
+.progressLabel {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  text-align: center;
+  max-width: 56px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.progressStep--active .progressLabel {
+  color: var(--color-brand-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.progressStep--done .progressLabel {
+  color: #3A7D44;
+}
+
+/* ── Sub-section wrapper ─────────────────────────────────────────────── */
+.subSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.subHeading {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-secondary);
+  margin: 0;
+  letter-spacing: 0.03em;
+}
+
+/* ── Service card ────────────────────────────────────────────────────── */
+.serviceCard {
+  background: linear-gradient(135deg, var(--color-brand-glow), var(--color-surface));
+  border: 1.5px solid var(--color-brand-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+}
+
+.protoBadge {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #8A5000;
+  background: #FEF0DC;
+  border: 1px solid var(--color-brand-light);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-3);
+  width: fit-content;
+}
+
+.serviceHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.serviceIconWrap {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.serviceIcon {
+  font-size: 22px;
+}
+
+.serviceInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.serviceName {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.serviceProvider {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.serviceDesc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+.selectedClub {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--color-bg);
+  border: 1px solid #9dd1a4;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-3);
+}
+
+.selectedClubLabel {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #2A6B34;
+}
+
+.selectedClubName {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}
+
+.serviceBtn {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-brand);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-5);
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(201, 107, 43, 0.25);
+  transition: background var(--transition-base);
+}
+
+.serviceBtn:hover {
+  background: var(--color-brand-accent);
+}
+
+/* ── Checklist ───────────────────────────────────────────────────────── */
+.checklistSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.checklistItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.checklistItem:has(.checkboxInput:checked) {
+  background: #F5FAF5;
+  border-color: #9dd1a4;
+}
+
+.checklistLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.checkboxInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkboxCustom {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--color-border);
+  background: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: border-color var(--transition-base), background var(--transition-base);
+}
+
+.checkboxCustom--checked {
+  background: #3A7D44;
+  border-color: #3A7D44;
+  color: #fff;
+}
+
+.checklistText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+}
+
+.checklistText--done {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: #9dd1a4;
+}
+
+.subActionBtn {
+  background: none;
+  border: 1px solid var(--color-brand-light);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-3);
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--transition-base);
+}
+
+.subActionBtn:hover {
+  background: var(--color-brand-glow);
+}
+
+/* ── Reassessment note ───────────────────────────────────────────────── */
+.reassessmentNote {
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.reassessmentHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.reassessmentIcon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.reassessmentText {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+.reassessmentDue {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.outcomeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.outcomeChip {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-3);
+}
+
+.outcomeChip--assigned {
+  color: var(--color-brand-primary);
+  background: var(--color-brand-glow);
+  border-color: var(--color-brand-light);
+  font-weight: var(--font-weight-semibold);
+}
+
+.outcomeNote {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Demo reset ──────────────────────────────────────────────────────── */
+.demoActions {
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.demoResetBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  padding: 0;
+}
+
+.demoResetBtn:hover {
+  color: var(--color-text-secondary);
+}
+
+.resetConfirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.resetConfirmText {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.resetConfirmYes {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: #C0392B;
+  background: none;
+  border: 1px solid #f5c6c2;
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  cursor: pointer;
+}
+
+.resetConfirmNo {
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   NearbyClubsModal styles
+   ════════════════════════════════════════════════════════════════════════ */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: rgba(28, 22, 18, 0.55);
+}
+
+.modal {
+  background: var(--color-bg);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+  z-index: 1;
+}
+
+.modalTitle {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.modalClose {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+}
+
+.protoNotice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  background: #FEF0DC;
+  border-bottom: 1px solid var(--color-brand-light);
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--font-size-xs);
+  color: #8A5000;
+  line-height: var(--line-height-relaxed);
+}
+
+.protoNoticeIcon {
+  flex-shrink: 0;
+  font-size: 14px;
+}
+
+.clubList {
+  list-style: none;
+  padding: var(--space-4) var(--space-6);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.clubItem {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  transition: border-color var(--transition-base);
+}
+
+.clubItem:hover {
+  border-color: var(--color-brand-accent);
+}
+
+.clubInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+  min-width: 0;
+}
+
+.clubName {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.clubDistance {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.clubActivity {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.clubTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: var(--space-1);
+}
+
+.clubTag {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand-primary);
+  background: var(--color-brand-glow);
+  border: 1px solid var(--color-brand-light);
+  border-radius: var(--radius-full);
+  padding: 1px var(--space-2);
+}
+
+.clubSelectBtn {
+  background: var(--color-brand-primary);
+  color: var(--color-text-on-brand);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background var(--transition-base);
+  align-self: center;
+}
+
+.clubSelectBtn:hover {
+  background: var(--color-brand-accent);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .progressLabel {
+    font-size: 8px;
+    max-width: 44px;
+  }
+
+  .clubItem {
+    flex-direction: column;
+  }
+
+  .clubSelectBtn {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .modalOverlay {
+    padding: var(--space-4);
+    align-items: flex-end;
+  }
+
+  .modal {
+    max-height: 90vh;
+    border-radius: var(--radius-xl) var(--radius-xl) var(--radius-md) var(--radius-md);
+  }
+}

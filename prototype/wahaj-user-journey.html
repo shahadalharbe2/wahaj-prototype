@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>رحلة سالم مع وهج — مخطط تدفق النظام</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cp:#C96B2B; --ca:#E8873D; --cl:#F7C68A; --cg:#FFF3E0;
+  --bg:#FFFDF9; --cs:#FFF8F0; --csa:#FEF3E2; --cb:#EAD9C6;
+  --ct1:#1C1612; --ct2:#5A4A38; --ctm:#9B856D;
+  --ff:'IBM Plex Sans Arabic','Segoe UI',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--ff);color:var(--ct1);background:#f0ece6;direction:rtl;text-align:right;-webkit-font-smoothing:antialiased;min-height:100vh;padding:48px 32px 64px;}
+
+.page-header{text-align:center;margin-bottom:56px;}
+.page-header h1{font-size:30px;font-weight:700;color:var(--ct1);margin-bottom:8px;}
+.page-header p{font-size:15px;color:var(--ct2);line-height:1.7;max-width:560px;margin:0 auto;}
+
+/* Journey container */
+.journey{max-width:960px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:0;}
+
+/* Row: step + connector */
+.j-step{display:flex;align-items:stretch;width:100%;gap:0;}
+
+/* Connector spine */
+.j-spine{width:3px;background:linear-gradient(to bottom,var(--cl),var(--cb));flex-shrink:0;margin:0 auto;border-radius:2px;}
+
+/* Phase label */
+.j-phase{
+  font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ctm);padding:32px 0 8px;text-align:center;
+}
+
+/* Node card */
+.j-node{
+  background:var(--bg);border:1.5px solid var(--cb);border-radius:18px;
+  padding:20px 24px;width:100%;max-width:660px;margin:0 auto;
+  box-shadow:0 2px 8px rgba(90,50,10,.08),0 6px 24px rgba(90,50,10,.06);
+  position:relative;
+}
+.j-node.entry    { border-color:var(--cp);  background:linear-gradient(135deg,#fff8f0,var(--bg)); }
+.j-node.assess   { border-color:var(--cl);  }
+.j-node.analyze  { border-color:var(--ca);  background:linear-gradient(135deg,#fff3e0,var(--bg)); }
+.j-node.result   { border-color:#9dd1a4; background:linear-gradient(135deg,#f0faf2,var(--bg)); }
+.j-node.monitor  { border-color:#bcd5f5; background:linear-gradient(135deg,#edf4fd,var(--bg)); }
+.j-node.decision { border-color:#c9b8f0; background:linear-gradient(135deg,#f3eeff,var(--bg)); }
+
+/* Node header */
+.j-node-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.j-icon{
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:22px;flex-shrink:0;
+}
+.j-icon.brand  { background:var(--cg); border:1.5px solid var(--cl); }
+.j-icon.health { background:#fdf0ef; }
+.j-icon.ai     { background:linear-gradient(135deg,#fff3e0,#fdf0e8); border:1.5px solid var(--cl); }
+.j-icon.green  { background:#edf7ee; }
+.j-icon.blue   { background:#edf4fd; }
+.j-icon.purple { background:#f3eeff; }
+.j-icon.orange { background:#fff8ee; }
+
+.j-node-title{font-size:17px;font-weight:700;color:var(--ct1);line-height:1.3;}
+.j-node-sub{font-size:13px;color:var(--ctm);margin-top:2px;}
+
+/* Node body */
+.j-node-body{font-size:14px;color:var(--ct2);line-height:1.7;}
+
+/* Sub-steps */
+.j-substeps{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+.j-substep{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  background:var(--cs);border:1px solid var(--cb);
+  font-size:13px;color:var(--ct2);line-height:1.5;
+}
+.j-substep-dot{
+  width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;
+  color:#fff;background:var(--cp);
+}
+.j-substep-dot.green{background:#3a7d44;}
+.j-substep-dot.blue{background:#2472bc;}
+.j-substep-dot.purple{background:#7c5cd8;}
+.j-substep-dot.orange{background:#e8873d;}
+.j-substep-dot.grey{background:var(--ctm);}
+
+/* Agent grid inside node */
+.j-agents{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.j-agent-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:500;border-radius:9999px;
+  padding:5px 12px;border:1px solid var(--cb);background:var(--cs);
+}
+
+/* Arrow between major nodes */
+.j-arrow{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 0;
+}
+.j-arrow-line{width:3px;height:28px;background:linear-gradient(to bottom,var(--cb),var(--cl));border-radius:2px;}
+.j-arrow-head{
+  width:0;height:0;
+  border-left:7px solid transparent;
+  border-right:7px solid transparent;
+  border-top:10px solid var(--cp);
+}
+.j-arrow-label{font-size:11px;color:var(--ctm);font-weight:500;letter-spacing:.03em;}
+
+/* Decision branches */
+.j-branches{
+  display:flex;gap:16px;width:100%;max-width:660px;margin:0 auto;flex-wrap:wrap;
+  justify-content:center;
+}
+.j-branch{
+  flex:1;min-width:140px;
+  background:var(--cs);border:1.5px solid var(--cb);border-radius:14px;
+  padding:14px 16px;text-align:center;
+}
+.j-branch.good   { border-color:#9dd1a4; background:#f0faf2; }
+.j-branch.warn   { border-color:var(--cl); background:#fff8f0; }
+.j-branch.risk   { border-color:#f5c6c2; background:#fdf8f8; }
+.j-branch.refer  { border-color:#c9b8f0; background:#f3eeff; }
+.j-branch-icon{font-size:24px;margin-bottom:6px;}
+.j-branch-title{font-size:13px;font-weight:700;color:var(--ct1);margin-bottom:4px;}
+.j-branch-desc{font-size:11px;color:var(--ctm);line-height:1.5;}
+
+/* Connector lines */
+.j-branch-connector{
+  display:flex;align-items:flex-start;justify-content:center;gap:0;
+  width:100%;max-width:660px;margin:0 auto;height:28px;position:relative;
+}
+.j-branch-connector::before{
+  content:'';position:absolute;
+  top:0;right:20%;left:20%;
+  height:2px;background:var(--cb);
+}
+.j-branch-connector::after{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:2px;height:100%;background:var(--cb);
+}
+
+/* Loop back note */
+.j-loop{
+  background:var(--cg);border:1.5px dashed var(--ca);border-radius:14px;
+  padding:14px 20px;width:100%;max-width:660px;margin:0 auto;
+  font-size:13px;color:var(--ct2);line-height:1.6;text-align:center;
+}
+
+/* Footer */
+.page-footer{text-align:center;padding:40px 0 0;border-top:1px solid var(--cb);margin-top:48px;}
+.logo-inline{display:inline-flex;align-items:center;gap:8px;margin-bottom:6px;}
+.logo-inline-mark{
+  position:relative;width:26px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-ring{position:absolute;border-radius:50%;border:1.5px solid var(--ca);}
+.logo-ring.r3{width:24px;height:24px;opacity:.2;}
+.logo-ring.r2{width:17px;height:17px;opacity:.35;}
+.logo-ring.r1{width:11px;height:11px;opacity:.55;}
+.logo-core{width:6px;height:6px;border-radius:50%;background:var(--cp);position:relative;z-index:1;}
+.logo-inline-text{font-size:16px;font-weight:700;color:var(--cp);}
+
+/* Timeline steps legend */
+.timeline-legend{
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;
+  max-width:700px;margin:0 auto 40px;
+}
+.tl-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--ct2);
+}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="logo-inline" style="justify-content:center;margin-bottom:12px;">
+    <div class="logo-inline-mark">
+      <span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span>
+      <span class="logo-core"></span>
+    </div>
+    <span class="logo-inline-text" style="font-size:22px;">وهج</span>
+  </div>
+  <h1>رحلة سالم مع وهج</h1>
+  <p>مخطط تدفق متكامل يُظهر كيف ترافق منصة وهج المستخدم من لحظة بدء إجراءات التقاعد حتى المتابعة المستمرة وتحسين جودة الحياة.</p>
+</div>
+
+<!-- Legend -->
+<div class="timeline-legend">
+  <div class="tl-item"><div class="tl-dot" style="background:var(--cp);"></div>الدخول والبداية</div>
+  <div class="tl-item"><div class="tl-dot" style="background:var(--ca);"></div>التقييم 360°</div>
+  <div class="tl-item"><div class="tl-dot" style="background:#7c5cd8;"></div>التحليل الذكي</div>
+  <div class="tl-item"><div class="tl-dot" style="background:#3a7d44;"></div>النتائج والتوصيات</div>
+  <div class="tl-item"><div class="tl-dot" style="background:#2472bc;"></div>الموافقة والمتابعة</div>
+  <div class="tl-item"><div class="tl-dot" style="background:#9b856d;"></div>قرارات التكيّف</div>
+</div>
+
+<div class="journey">
+
+  <!-- ── STEP 1: Entry ────────────────────────────────────────────────── -->
+  <div class="j-phase">المرحلة الأولى — الدخول</div>
+
+  <div class="j-node entry">
+    <div class="j-node-header">
+      <div class="j-icon brand">🌅</div>
+      <div>
+        <div class="j-node-title">سالم يدخل منصة وهج</div>
+        <div class="j-node-sub">الشاشة الرئيسية — ابدأ رحلتي مع وهج</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      سالم، موظف يقترب من التقاعد، يصل إلى منصة وهج. يرى المحاور الستة التي يرافقه فيها وهج: الصحة، النشاط، الرفاه النفسي، الحياة الاجتماعية، الاستقرار المالي، الخبرات والهدف.
+      يضغط على <strong>"ابدأ رحلتي مع وهج"</strong> ليبدأ تقييم 360°.
+    </div>
+  </div>
+
+  <div class="j-arrow">
+    <div class="j-arrow-line"></div>
+    <div class="j-arrow-head"></div>
+  </div>
+
+  <!-- ── STEP 2: Assessment ──────────────────────────────────────────── -->
+  <div class="j-phase">المرحلة الثانية — تقييم وهج 360°</div>
+
+  <div class="j-node assess">
+    <div class="j-node-header">
+      <div class="j-icon brand">📋</div>
+      <div>
+        <div class="j-node-title">تقييم وهج 360° — 18 سؤالًا عبر 6 محاور</div>
+        <div class="j-node-sub">كل محور = صفحة واحدة • جميع الأسئلة معروضة معًا</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      يمر سالم عبر 6 صفحات متتالية. في كل صفحة يرى المحور كاملًا مع جميع أسئلته الثلاثة — لا ينتقل بين سؤال وآخر، بل بين محور ومحور.
+    </div>
+    <div class="j-substeps">
+      <div class="j-substep">
+        <div class="j-substep-dot">1</div>
+        <div><strong>🫀 الصحة والأمراض المزمنة</strong> — Q1: تقييم الصحة العامة · Q2: الحالات المزمنة · Q3: الالتزام الطبي</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot">2</div>
+        <div><strong>🏃 النشاط والحركة</strong> — Q4: تكرار النشاط · Q5: الصعوبة الحركية · Q6: توقع ما بعد التقاعد</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot purple">3</div>
+        <div><strong>🧠 الرفاه النفسي</strong> — Q7: المشاعر تجاه التقاعد · Q8: وضوح الهدف · Q9: تأثير ترك العمل</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot blue">4</div>
+        <div><strong>🤝 الحياة الاجتماعية</strong> — Q10: توقع التواصل · Q11: قوة الشبكة · Q12: الرغبة التطوعية</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot orange">5</div>
+        <div><strong>💼 الاستعداد المالي</strong> — Q13: وضوح الدخل · Q14: الضغط المالي · Q15: الاحتياطي</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot grey">6</div>
+        <div><strong>🌟 الخبرة والهدف</strong> — Q16: الاستمرار · Q17: أسلوب التوظيف · Q18: أولى الهواجس</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="j-arrow">
+    <div class="j-arrow-line"></div>
+    <div class="j-arrow-label">اكتمل التقييم</div>
+    <div class="j-arrow-head"></div>
+  </div>
+
+  <!-- ── STEP 3: AI Analysis ─────────────────────────────────────────── -->
+  <div class="j-phase">المرحلة الثالثة — التحليل الذكي متعدد الوكلاء</div>
+
+  <div class="j-node analyze">
+    <div class="j-node-header">
+      <div class="j-icon ai">⟳</div>
+      <div>
+        <div class="j-node-title">وهج يحلل صورة سالم المتكاملة</div>
+        <div class="j-node-sub">6 وكلاء متخصصون + منسق وهج الذكي</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      تعمل 6 وكلاء متخصصة بشكل متسلسل على تحليل إجابات سالم في مجالها. ثم يجمع منسق وهج الذكي (Wahaj Orchestrator) النتائج ويكتشف الروابط بين المجالات.
+    </div>
+    <div class="j-agents">
+      <span class="j-agent-pill">🫀 وكيل الصحة</span>
+      <span class="j-agent-pill">🏃 وكيل النشاط</span>
+      <span class="j-agent-pill">🧠 وكيل النفسي</span>
+      <span class="j-agent-pill">🤝 وكيل الاجتماعي</span>
+      <span class="j-agent-pill">💼 وكيل المالي</span>
+      <span class="j-agent-pill">🌟 وكيل الخبرة</span>
+    </div>
+    <div class="j-substeps" style="margin-top:14px;">
+      <div class="j-substep">
+        <div class="j-substep-dot">⟳</div>
+        <div><strong>منسق وهج الذكي:</strong> يكتشف الروابط بين المجالات، يحدد الأولويات، يطبّق قواعد الأمان وقواعد التصعيد من قاعدة المعرفة (KB)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="j-arrow">
+    <div class="j-arrow-line"></div>
+    <div class="j-arrow-label">اكتملت التحليلات</div>
+    <div class="j-arrow-head"></div>
+  </div>
+
+  <!-- ── STEP 4: Results ─────────────────────────────────────────────── -->
+  <div class="j-phase">المرحلة الرابعة — نتائج سالم وتوصيات وهج</div>
+
+  <div class="j-node result">
+    <div class="j-node-header">
+      <div class="j-icon green">📊</div>
+      <div>
+        <div class="j-node-title">صورة سالم المتكاملة مع وهج</div>
+        <div class="j-node-sub">الأولويات + توصيات مخصصة + شفافية الأدلة</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      يرى سالم لوحة نتائجه المتكاملة:
+    </div>
+    <div class="j-substeps">
+      <div class="j-substep">
+        <div class="j-substep-dot green">✓</div>
+        <div><strong>الملخص العام:</strong> مستوى الاستعداد، عدد الأولويات المرتفعة، الفرص</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot green">6</div>
+        <div><strong>بطاقات الوكلاء الستة:</strong> كل مجال بحالته (مستقر / يحتاج اهتمام / فرصة) + التوصية</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot orange">🔗</div>
+        <div><strong>ما الذي ربطه وهج؟</strong> الروابط بين المجالات التي اكتشفها المنسق الذكي</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot">1</div>
+        <div><strong>أولويات سالم:</strong> قائمة مرتبة بأهم التدخلات مع إجابة "لماذا أوصى وهج بهذا؟"</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot purple">📚</div>
+        <div><strong>الشفافية:</strong> المؤشرات المستخدمة، مصادر الأدلة (WHO، MOH، GOSI)، معرّف القاعدة</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="j-arrow">
+    <div class="j-arrow-line"></div>
+    <div class="j-arrow-label">يرى سالم أولوياته</div>
+    <div class="j-arrow-head"></div>
+  </div>
+
+  <!-- ── STEP 5: Approval ────────────────────────────────────────────── -->
+  <div class="j-phase">المرحلة الخامسة — موافقة سالم على المسار</div>
+
+  <div class="j-node monitor">
+    <div class="j-node-header">
+      <div class="j-icon blue">✅</div>
+      <div>
+        <div class="j-node-title">سالم يعتمد المسار المقترح</div>
+        <div class="j-node-sub">User Approval — Human-in-the-Loop</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      سالم يقرأ التوصية الأولى: <em>"البدء بخطة تدريجية — 3 أيام/أسبوع من المشي لمدة 30 دقيقة"</em>.
+      يطّلع على سبب التوصية والأدلة العلمية. إذا صدر تنبيه بمراجعة مختص، يرى ملخص الحالة للمختص ويتخذ قراره.
+    </div>
+    <div class="j-substeps">
+      <div class="j-substep">
+        <div class="j-substep-dot orange">🔶</div>
+        <div><strong>مراجعة مختص مقترحة:</strong> وهج يُولّد ملخص الحالة للمختص (Human Review Modal) — المختص يعتمد أو يعدّل أو يُحيل</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="j-arrow">
+    <div class="j-arrow-line"></div>
+    <div class="j-arrow-label">بدء المتابعة</div>
+    <div class="j-arrow-head"></div>
+  </div>
+
+  <!-- ── STEP 6: Monitoring ──────────────────────────────────────────── -->
+  <div class="j-phase">المرحلة السادسة — المتابعة المستمرة</div>
+
+  <div class="j-node monitor">
+    <div class="j-node-header">
+      <div class="j-icon blue">📈</div>
+      <div>
+        <div class="j-node-title">وهج يرافق سالم ويرصد تطوره</div>
+        <div class="j-node-sub">متابعة الاستجابة وقياس التحسن الملحوظ</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      بعد التقاعد، يواصل وهج مرافقة سالم:
+    </div>
+    <div class="j-substeps">
+      <div class="j-substep">
+        <div class="j-substep-dot blue">📅</div>
+        <div>متابعة دورية للأنشطة والأهداف المحددة</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot blue">📊</div>
+        <div>قياس التحسن في مستوى النشاط البدني والرفاه النفسي</div>
+      </div>
+      <div class="j-substep">
+        <div class="j-substep-dot blue">🔄</div>
+        <div>مقارنة الوضع الراهن مع خط الأساس من تقييم 360°</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="j-arrow">
+    <div class="j-arrow-line"></div>
+    <div class="j-arrow-label">نتيجة المتابعة</div>
+    <div class="j-arrow-head"></div>
+  </div>
+
+  <!-- ── STEP 7: Decision Branches ──────────────────────────────────── -->
+  <div class="j-phase">المرحلة السابعة — وهج يقرر: استمرار، تعديل، إعادة توجيه، أو إحالة</div>
+
+  <div class="j-node decision">
+    <div class="j-node-header">
+      <div class="j-icon purple">🔀</div>
+      <div>
+        <div class="j-node-title">وهج يكيّف مسار سالم بناءً على استجابته</div>
+        <div class="j-node-sub">Adaptive Pathway — 4 مسارات ممكنة</div>
+      </div>
+    </div>
+    <div class="j-node-body">
+      بناءً على بيانات المتابعة، يقيّم وهج استجابة سالم ويختار المسار الأنسب:
+    </div>
+  </div>
+
+  <!-- Branch connector visual -->
+  <div style="width:100%;max-width:660px;margin:0 auto;height:20px;position:relative;display:flex;align-items:flex-end;justify-content:center;">
+    <div style="width:2px;height:20px;background:var(--cb);margin:0 auto;"></div>
+  </div>
+  <div style="width:100%;max-width:660px;margin:0 auto;height:2px;background:var(--cb);position:relative;"></div>
+
+  <div class="j-branches" style="margin-top:0;padding-top:0;">
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;flex:1;min-width:130px;">
+      <div style="width:2px;height:16px;background:var(--cb);"></div>
+      <div class="j-branch good">
+        <div class="j-branch-icon">✅</div>
+        <div class="j-branch-title">استمرار</div>
+        <div class="j-branch-desc">الاستجابة جيدة — المسار يستمر مع تعزيز التقدم</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;flex:1;min-width:130px;">
+      <div style="width:2px;height:16px;background:var(--cb);"></div>
+      <div class="j-branch warn">
+        <div class="j-branch-icon">🔧</div>
+        <div class="j-branch-title">تعديل</div>
+        <div class="j-branch-desc">التقدم بطيء — وهج يعدّل الهدف أو الأسلوب</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;flex:1;min-width:130px;">
+      <div style="width:2px;height:16px;background:var(--cb);"></div>
+      <div class="j-branch risk">
+        <div class="j-branch-icon">🔄</div>
+        <div class="j-branch-title">إعادة توجيه</div>
+        <div class="j-branch-desc">أولوية جديدة تظهر — وهج يُعيد ترتيب المسار</div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0;flex:1;min-width:130px;">
+      <div style="width:2px;height:16px;background:var(--cb);"></div>
+      <div class="j-branch refer">
+        <div class="j-branch-icon">🔶</div>
+        <div class="j-branch-title">إحالة لمختص</div>
+        <div class="j-branch-desc">وضع يتجاوز النطاق الذاتي — وهج يُحيل بملخص الحالة</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Loop back note -->
+  <div style="height:20px;width:2px;background:var(--cb);margin:12px auto 0;"></div>
+  <div class="j-loop" style="margin-top:0;">
+    <strong>🔁 وهج يستمر معك</strong><br>
+    المتابعة المستمرة حلقة مستدامة — وهج يرافق سالم في كل مراحل ما بعد التقاعد،
+    ويُحدّث مساره بناءً على استجاباته وتغيراته.
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="page-footer">
+  <div class="logo-inline" style="justify-content:center;margin-bottom:8px;">
+    <div class="logo-inline-mark">
+      <span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span>
+      <span class="logo-core"></span>
+    </div>
+    <span class="logo-inline-text">وهج</span>
+  </div>
+  <p style="font-size:12px;color:var(--ctm);margin-bottom:4px;">رحلة سالم مع وهج — منصة الانتقال الوقائي الذكي للتقاعد</p>
+  <p style="font-size:11px;color:var(--ctm);">نموذج تجريبي للعرض • Made with IBM Bob</p>
+</div>
+
+</body>
+</html>

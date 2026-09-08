@@ -1,0 +1,1026 @@
+{
+  "schemaVersion": "2.0",
+  "name": "Wahaj Trusted Knowledge Base",
+  "purpose": "Grounding layer for Wahaj specialized agents, orchestrator, explainability, follow-up prioritization, and deterministic human escalation.",
+  "auditVersion": "Health evidence audit v2",
+  "generatedAt": "2026-09-08",
+  "governance": {
+    "aiRole": "Interpret, connect, personalize, and explain using approved knowledge.",
+    "safetyRule": "Safety and escalation rules remain deterministic and separate from any LLM.",
+    "clinicalGuardrail": "No diagnosis or medication changes.",
+    "psychologicalGuardrail": "No mental-health diagnosis.",
+    "financialGuardrail": "No personalized investment advice.",
+    "riskLabelingRule": "Do not label a user as high medical risk from the 18-question assessment alone. Use follow-up priority unless a validated risk model or explicit approved safety rule supports a risk label.",
+    "prototypeNotice": "Rules marked prototype/requiring expert validation must not be presented as clinically validated.",
+    "evidenceRule": "Only show a source as supporting a recommendation when the source ID is explicitly mapped to that rule."
+  },
+  "agents": [
+    {
+      "name": "Health & Chronic Disease Agent",
+      "domainAr": "الصحة",
+      "questions": "Q1–Q3 + Q5",
+      "primaryTrustedSources": "Saudi MOH + WHO",
+      "primaryOutput": "مخاطر الأمراض المزمنة والمتابعة",
+      "humanLayer": "مختص صحي عند ضعف المتابعة/تعقيد الحالة"
+    },
+    {
+      "name": "Physical / Mobility Agent",
+      "domainAr": "الحركة",
+      "questions": "Q4–Q6",
+      "primaryTrustedSources": "Saudi MOH + WHO PA Guidelines",
+      "primaryOutput": "النشاط والقدرة الوظيفية والتوازن",
+      "humanLayer": "مراجعة بشرية للصعوبة الوظيفية؛ Safety عند أعراض النشاط"
+    },
+    {
+      "name": "Psychological Agent",
+      "domainAr": "النفسي",
+      "questions": "Q7–Q9 + Q10/Q11",
+      "primaryTrustedSources": "WHO Mental Health Older Adults",
+      "primaryOutput": "الانتقال، القلق، الهدف والهوية",
+      "humanLayer": "مختص نفسي عند تراكم إشارات قوية؛ Safety مستقل للخطر الفوري"
+    },
+    {
+      "name": "Social Agent",
+      "domainAr": "الاجتماعي",
+      "questions": "Q10–Q12",
+      "primaryTrustedSources": "WHO Social Connection + HRSD",
+      "primaryOutput": "شبكة الدعم والعزلة والمشاركة",
+      "humanLayer": "أخصائي اجتماعي/مرشد حالة عند عزلة مركبة"
+    },
+    {
+      "name": "Financial Agent",
+      "domainAr": "المالي",
+      "questions": "Q13–Q15",
+      "primaryTrustedSources": "GOSI + SAMA",
+      "primaryOutput": "وضوح مالي، ضغط، استعداد للطوارئ",
+      "humanLayer": "مستشار مؤهل عند حالة معقدة؛ لا استثمار شخصي"
+    },
+    {
+      "name": "Career / Experience Agent",
+      "domainAr": "الخبرات",
+      "questions": "Q16–Q17 + Q8/Q9",
+      "primaryTrustedSources": "HRSD + WHO Healthy Ageing",
+      "primaryOutput": "فرص استثمار الخبرة والمعنى",
+      "humanLayer": "مرشد/جهة شريكة عند المطابقة، Opportunity وليس Risk"
+    },
+    {
+      "name": "Wahaj Orchestrator",
+      "domainAr": "التكامل",
+      "questions": "كل المجالات",
+      "primaryTrustedSources": "يستهلك مخرجات الوكلاء وقواعد السلامة",
+      "primaryOutput": "يربط الإشارات ويحدد الأولويات والتدخلات متعددة الأهداف",
+      "humanLayer": "لا يخفض Safety Flag ولا يخترع عتبات"
+    }
+  ],
+  "questionMapping": [
+    {
+      "questionNumber": 1,
+      "domain": "الصحة العامة",
+      "shortQuestion": "كيف تقيّم صحتك العامة؟",
+      "agent": "الصحة",
+      "indicator": "Baseline self-rated health",
+      "signalUse": "صحة ممتازة/جيدة مقابل متوسطة/ضعيفة"
+    },
+    {
+      "questionNumber": 2,
+      "domain": "الأمراض المزمنة",
+      "shortQuestion": "هل شُخّصت بأي من الحالات التالية؟",
+      "agent": "الصحة",
+      "indicator": "Chronic-condition burden",
+      "signalUse": "سكري، ضغط، قلب، دهون، تنفسي، عظام/مفاصل، أخرى"
+    },
+    {
+      "questionNumber": 3,
+      "domain": "الالتزام بالمتابعة",
+      "shortQuestion": "إلى أي مدى تلتزم بالأدوية والفحوصات والمواعيد؟",
+      "agent": "الصحة",
+      "indicator": "Adherence / follow-up need",
+      "signalUse": "انخفاض الالتزام يرفع أولوية المراجعة"
+    },
+    {
+      "questionNumber": 4,
+      "domain": "النشاط",
+      "shortQuestion": "كم يومًا في الأسبوع تمارس نشاطًا بدنيًا؟",
+      "agent": "الحركة",
+      "indicator": "Activity frequency",
+      "signalUse": "0 أو 1–2 يوم = فرصة تحسين"
+    },
+    {
+      "questionNumber": 5,
+      "domain": "القدرة الوظيفية",
+      "shortQuestion": "هل تواجه صعوبة في المشي أو الدرج أو التوازن أو الأنشطة اليومية؟",
+      "agent": "الحركة + الصحة",
+      "indicator": "Mobility / functional difficulty",
+      "signalUse": "متوسطة/كبيرة = أولوية أعلى"
+    },
+    {
+      "questionNumber": 6,
+      "domain": "التغير المتوقع بالنشاط",
+      "shortQuestion": "كيف تتوقع نشاطك بعد التقاعد؟",
+      "agent": "الحركة",
+      "indicator": "Expected activity decline",
+      "signalUse": "تراجع متوقع = تدخل وقائي مبكر"
+    },
+    {
+      "questionNumber": 7,
+      "domain": "الانتقال النفسي",
+      "shortQuestion": "كيف تشعر تجاه مرحلة التقاعد؟",
+      "agent": "النفسي",
+      "indicator": "Transition anxiety",
+      "signalUse": "قلق/قلق جدًا = دعم أعلى"
+    },
+    {
+      "questionNumber": 8,
+      "domain": "الهدف والروتين",
+      "shortQuestion": "ما مدى وضوح هدفك وروتينك اليومي بعد التقاعد؟",
+      "agent": "النفسي + الخبرات",
+      "indicator": "Purpose / routine clarity",
+      "signalUse": "عدم الوضوح = فرصة تصميم روتين وهدف"
+    },
+    {
+      "questionNumber": 9,
+      "domain": "الهوية والإنجاز",
+      "shortQuestion": "ما أثر ترك العمل على شعورك بالقيمة أو الإنجاز أو الهوية؟",
+      "agent": "النفسي + الخبرات",
+      "indicator": "Role/identity transition",
+      "signalUse": "أثر كبير = دعم انتقال واستثمار الخبرة"
+    },
+    {
+      "questionNumber": 10,
+      "domain": "التواصل بعد التقاعد",
+      "shortQuestion": "كيف تتوقع أن يتغير تواصلك مع الأشخاص؟",
+      "agent": "الاجتماعي + النفسي",
+      "indicator": "Expected social-contact change",
+      "signalUse": "انخفاض = خطر عزلة محتمل"
+    },
+    {
+      "questionNumber": 11,
+      "domain": "شبكة الدعم",
+      "shortQuestion": "كيف تصف شبكة دعمك خارج العمل؟",
+      "agent": "الاجتماعي",
+      "indicator": "Support network",
+      "signalUse": "محدودة/شبه معدومة = أولوية اجتماعية"
+    },
+    {
+      "questionNumber": 12,
+      "domain": "المشاركة المجتمعية",
+      "shortQuestion": "هل تهتم بأنشطة اجتماعية/مجتمعية/تطوعية؟",
+      "agent": "الاجتماعي + الخبرات",
+      "indicator": "Social participation opportunity",
+      "signalUse": "نعم/ربما = فرصة مطابقة نشاط"
+    },
+    {
+      "questionNumber": 13,
+      "domain": "وضوح الوضع المالي",
+      "shortQuestion": "ما مدى وضوح دخلك والتزاماتك ومصروفاتك بعد التقاعد؟",
+      "agent": "المالي",
+      "indicator": "Financial clarity",
+      "signalUse": "وضوح منخفض = تثقيف وتنظيم مالي"
+    },
+    {
+      "questionNumber": 14,
+      "domain": "الضغط المالي المتوقع",
+      "shortQuestion": "كم تتوقع أن يكون الضغط المالي بعد التقاعد؟",
+      "agent": "المالي + النفسي",
+      "indicator": "Expected financial strain",
+      "signalUse": "متوسط/مرتفع = أولوية تخطيط ومراجعة"
+    },
+    {
+      "questionNumber": 15,
+      "domain": "احتياطي الطوارئ",
+      "shortQuestion": "هل لديك احتياطي أو خطة للمصاريف غير المتوقعة؟",
+      "agent": "المالي",
+      "indicator": "Emergency preparedness",
+      "signalUse": "لا/غير متأكد = فرصة إعداد خطة"
+    },
+    {
+      "questionNumber": 16,
+      "domain": "استثمار الخبرة",
+      "shortQuestion": "هل ترغب في الاستمرار بالاستفادة من خبراتك ومهاراتك؟",
+      "agent": "الخبرات",
+      "indicator": "Experience continuation intent",
+      "signalUse": "نعم/ربما = فرصة عالية"
+    },
+    {
+      "questionNumber": 17,
+      "domain": "طريقة استثمار الخبرة",
+      "shortQuestion": "كيف تفضّل الاستفادة من خبراتك؟",
+      "agent": "الخبرات + الاجتماعي",
+      "indicator": "Preferred contribution pathway",
+      "signalUse": "إرشاد، استشارات، تدريب، تطوع، عمل مرن، ريادة، نقل معرفة"
+    },
+    {
+      "questionNumber": 18,
+      "domain": "أكبر مصدر قلق",
+      "shortQuestion": "ما أكبر ما يقلقك بعد التقاعد؟",
+      "agent": "جميع الوكلاء",
+      "indicator": "User-stated priority",
+      "signalUse": "يُستخدم لترجيح الأولويات لا كتشخيص"
+    }
+  ],
+  "knowledgeRules": [
+    {
+      "ruleId": "KB-H-01",
+      "agent": "الصحة",
+      "inputQuestions": "Q2 + Q3",
+      "trigger": "وجود مرض مزمن + التزام منخفض بالدواء/الفحوص/المواعيد",
+      "type": "Follow-up Priority",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "رفع أولوية المتابعة الصحية وإعداد ملخص حالة للمختص لمراجعة الخطة الحالية والالتزام بها؛ لا تشخيص ولا تعديل أدوية.",
+      "evidenceRationale": "وجود مرض مزمن مع متابعة متقطعة أو منخفضة يُعامل في وهج كإشارة لأولوية المتابعة، وليس كتشخيص أو تقدير لخطر طبي مرتفع. وزارة الصحة تؤكد أهمية الالتزام بالخطة والعمل مع فريق الرعاية الصحية والرعاية الروتينية في إدارة السكري.",
+      "sourceIds": [
+        "S15"
+      ],
+      "validationStatus": "منطق متابعة محافظ مدعوم بإرشاد رسمي؛ عتبة التصعيد تحتاج اعتماد مختص قبل الإنتاج",
+      "confidence": "High",
+      "interpretationLabel": "أولوية متابعة صحية"
+    },
+    {
+      "ruleId": "KB-H-02",
+      "agent": "الصحة",
+      "inputQuestions": "Q2",
+      "trigger": "سكري",
+      "type": "Follow-up Priority",
+      "escalation": "🟢 Self-Guided / 🟠 if low adherence",
+      "recommendedAction": "تقديم تثقيف عام حول إدارة السكري والنشاط المناسب للحالة والقدرة، مع تعزيز المتابعة مع فريق الرعاية الصحية؛ لا تغيير علاج أو أهداف سريرية.",
+      "evidenceRationale": "وزارة الصحة تعد النشاط البدني، الالتزام بالخطة الموصوفة، القياس المنتظم والعمل مع فريق الرعاية الصحية عناصر في إدارة السكري. WHO توصي بأن تراعي برامج النشاط احتياجات وقدرات كبار السن حتى مع الأمراض المزمنة.",
+      "sourceIds": [
+        "S02",
+        "S15",
+        "S16"
+      ],
+      "validationStatus": "مصادر رسمية؛ وجود السكري وحده لا يُصنف كخطر طارئ",
+      "confidence": "High",
+      "interpretationLabel": "حالة مزمنة تحتاج متابعة مناسبة"
+    },
+    {
+      "ruleId": "KB-H-03",
+      "agent": "الصحة",
+      "inputQuestions": "Q2",
+      "trigger": "ارتفاع ضغط الدم",
+      "type": "Follow-up Priority",
+      "escalation": "🟢 Self-Guided / 🟠 if low adherence",
+      "recommendedAction": "التأكيد على المتابعة ونمط الحياة الصحي وفق الخطة الطبية الحالية، مع إبقاء أي تعديل علاجي للمختص فقط.",
+      "evidenceRationale": "وزارة الصحة تصف ارتفاع ضغط الدم كعامل خطر قلبي وعائي يمكن التحكم به عبر نمط الحياة الصحي والعلاج عند الحاجة. في وهج، وجود التشخيص يرفع أولوية المتابعة ولا يعني خطرًا طارئًا بحد ذاته.",
+      "sourceIds": [
+        "S03"
+      ],
+      "validationStatus": "مصدر رسمي سعودي؛ لا استنتاج لخطر فردي مرتفع من التشخيص وحده",
+      "confidence": "High",
+      "interpretationLabel": "حالة مزمنة تحتاج متابعة مناسبة"
+    },
+    {
+      "ruleId": "KB-H-04",
+      "agent": "الصحة",
+      "inputQuestions": "Q2 + Q5",
+      "trigger": "مرض مزمن + صعوبة حركة متوسطة/كبيرة",
+      "type": "Follow-up Priority",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "طلب مراجعة ملاءمة النشاط مع مختص صحي/علاج طبيعي بحسب الحالة قبل رفع الشدة، مع التركيز على القدرة الوظيفية والتوازن.",
+      "evidenceRationale": "عند اجتماع مرض مزمن مع صعوبة حركة متوسطة أو كبيرة، يحتاج النشاط إلى ملاءمة حسب القدرة والاحتياجات. هذا فرز محافظ وليس تشخيصًا لسبب صعوبة الحركة.",
+      "sourceIds": [
+        "S01",
+        "S09",
+        "S16"
+      ],
+      "validationStatus": "مدعومة بإرشادات الحركة؛ عتبة Human Review تحتاج اعتماد مختص",
+      "confidence": "High",
+      "interpretationLabel": "أولوية متابعة صحية-وظيفية"
+    },
+    {
+      "ruleId": "KB-H-05",
+      "agent": "الصحة",
+      "inputQuestions": "Q1",
+      "trigger": "الصحة العامة = ضعيفة",
+      "type": "Follow-up Priority",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "اقتراح مراجعة رعاية أولية/تقييم صحي مناسب بدل الاكتفاء بتوصيات نمط الحياة، دون استنتاج مرض أو خطر محدد.",
+      "evidenceRationale": "التقييم الذاتي الضعيف للصحة يُستخدم في نموذج وهج الحالي كإشارة فرز محافظة فقط؛ لا يثبت تشخيصًا أو مستوى خطر طبي.",
+      "sourceIds": [
+        "S06",
+        "S07"
+      ],
+      "validationStatus": "قاعدة تجريبية للعرض — تتطلب اعتماد مختص",
+      "confidence": "Medium",
+      "interpretationLabel": "أولوية متابعة تجريبية"
+    },
+    {
+      "ruleId": "KB-P-01",
+      "agent": "الحركة",
+      "inputQuestions": "Q4",
+      "trigger": "0 يوم نشاط أسبوعيًا",
+      "type": "Risk",
+      "escalation": "🟢 Self-Guided",
+      "recommendedAction": "ابدأ تدريجيًا بنشاط مناسب ومحبب، مع هدف أولي صغير ثم زيادة تدريجية.",
+      "evidenceRationale": "Saudi MOH recommends gradual increases and WHO provides evidence-based activity guidance for older adults.",
+      "sourceIds": [
+        "S01",
+        "S08"
+      ],
+      "validationStatus": "لا نستخدم 0 أيام كتشخيص؛ مجرد فرصة تدخل",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-P-02",
+      "agent": "الحركة",
+      "inputQuestions": "Q4",
+      "trigger": "1–2 يوم نشاط أسبوعيًا",
+      "type": "Opportunity",
+      "escalation": "🟢 Self-Guided",
+      "recommendedAction": "اقتراح زيادة تدريجية نحو المستوى الموصى به بحسب القدرة والحالة الصحية.",
+      "evidenceRationale": "Older adults are recommended to accumulate regular weekly activity; gradual progression is advised.",
+      "sourceIds": [
+        "S01",
+        "S08"
+      ],
+      "validationStatus": "مصدر رسمي/إرشادي",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-P-03",
+      "agent": "الحركة",
+      "inputQuestions": "Q5",
+      "trigger": "صعوبة توازن/حركة متوسطة أو كبيرة",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "أولوية لتقييم القدرة الوظيفية وخطة نشاط آمنة تتضمن التوازن والوقاية من السقوط.",
+      "evidenceRationale": "Saudi MOH and WHO emphasize balance and fall-prevention activity for older adults with poor mobility.",
+      "sourceIds": [
+        "S01",
+        "S09"
+      ],
+      "validationStatus": "لا يحدد سبب الصعوبة",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-P-04",
+      "agent": "الحركة",
+      "inputQuestions": "Q6",
+      "trigger": "يتوقع انخفاض النشاط بعد التقاعد",
+      "type": "Risk",
+      "escalation": "🟢 Preventive",
+      "recommendedAction": "بدء تدخل وقائي قبل التقاعد: روتين حركة ثابت ومتابعة أسبوعية.",
+      "evidenceRationale": "Retirement is a life transition; maintaining regular activity supports functional ability and healthy ageing.",
+      "sourceIds": [
+        "S06",
+        "S07",
+        "S08"
+      ],
+      "validationStatus": "استدلال وقائي، لا ادعاء سببية فردية",
+      "confidence": "Medium",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-P-05",
+      "agent": "الحركة",
+      "inputQuestions": "Future safety input",
+      "trigger": "ألم أو دوار أو ضيق نفس أثناء النشاط",
+      "type": "Safety",
+      "escalation": "🔴 Human Escalation",
+      "recommendedAction": "إيقاف مسار زيادة النشاط فورًا وتوجيه المستخدم لطلب تقييم طبي مناسب.",
+      "evidenceRationale": "Saudi MOH explicitly advises stopping physical activity when pain, dizziness, or shortness of breath occurs.",
+      "sourceIds": [
+        "S01"
+      ],
+      "validationStatus": "Hard safety rule from Saudi MOH",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-PSY-01",
+      "agent": "النفسي",
+      "inputQuestions": "Q7",
+      "trigger": "قلق جدًا من التقاعد",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "تقديم دعم انتقال منظم؛ إذا استمر الضيق أو أثّر على الأداء اليومي فمراجعة مختص نفسي.",
+      "evidenceRationale": "WHO identifies retirement-related stressors, including loss of purpose and reduced income, as relevant to mental health in later life.",
+      "sourceIds": [
+        "S04"
+      ],
+      "validationStatus": "شدة القلق وحدها ليست تشخيصًا",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-PSY-02",
+      "agent": "النفسي",
+      "inputQuestions": "Q8 + Q9",
+      "trigger": "غياب هدف واضح + أثر كبير لفقدان الدور/الهوية",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "خطة انتقال تشمل بناء روتين ومعنى جديد واستثمار الخبرة؛ مراجعة مختص إذا كان الأثر شديدًا أو مستمرًا.",
+      "evidenceRationale": "WHO highlights loss of sense of purpose at retirement as a mental-health stressor.",
+      "sourceIds": [
+        "S04"
+      ],
+      "validationStatus": "Prototype triage combination",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-PSY-03",
+      "agent": "النفسي",
+      "inputQuestions": "Q7 + Q10 + Q11",
+      "trigger": "قلق مرتفع + انخفاض تواصل متوقع + شبكة دعم محدودة",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "رفع أولوية التدخل النفسي-الاجتماعي وربط المستخدم بنشاط اجتماعي هادف، مع مراجعة بشرية عند الحاجة.",
+      "evidenceRationale": "Loneliness and social isolation are major mental-health risk factors in older age.",
+      "sourceIds": [
+        "S04",
+        "S05"
+      ],
+      "validationStatus": "Cross-agent rule",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-PSY-04",
+      "agent": "النفسي",
+      "inputQuestions": "Future safety input",
+      "trigger": "إفصاح عن إيذاء النفس/خطر فوري",
+      "type": "Safety",
+      "escalation": "🔴 Human Escalation",
+      "recommendedAction": "تجاوز المسار العادي وتفعيل بروتوكول السلامة البشري/الطوارئ المعتمد محليًا.",
+      "evidenceRationale": "Wahaj must not handle imminent mental-health safety risk through ordinary AI coaching.",
+      "sourceIds": [
+        "S04"
+      ],
+      "validationStatus": "يجب اعتماد بروتوكول محلي واضح قبل الإنتاج",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-SOC-01",
+      "agent": "الاجتماعي",
+      "inputQuestions": "Q10",
+      "trigger": "يتوقع انخفاض التواصل قليلًا/كثيرًا",
+      "type": "Risk",
+      "escalation": "🟢 / 🟠 حسب بقية الإشارات",
+      "recommendedAction": "اقتراح تدخل اجتماعي وقائي قبل التقاعد، مثل مجموعة نشاط أو تطوع أو لقاءات دورية.",
+      "evidenceRationale": "WHO recognizes social connection as important to mental and physical wellbeing.",
+      "sourceIds": [
+        "S05"
+      ],
+      "validationStatus": "مصدر WHO",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-SOC-02",
+      "agent": "الاجتماعي",
+      "inputQuestions": "Q11",
+      "trigger": "شبكة دعم محدودة/شبه معدومة",
+      "type": "Risk",
+      "escalation": "🟠 Human Review if combined",
+      "recommendedAction": "إعطاء أولوية لبناء شبكة دعم وربط المستخدم ببرامج مجتمعية؛ تصعيد إذا اجتمع مع ضيق نفسي مرتفع.",
+      "evidenceRationale": "Social isolation and loneliness are important social determinants of health.",
+      "sourceIds": [
+        "S04",
+        "S05"
+      ],
+      "validationStatus": "Cross-agent escalation only with added signals",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-SOC-03",
+      "agent": "الاجتماعي",
+      "inputQuestions": "Q12",
+      "trigger": "مهتم بالمشاركة الاجتماعية/التطوعية",
+      "type": "Opportunity",
+      "escalation": "🟢 Opportunity",
+      "recommendedAction": "مطابقة الاهتمام بفرصة اجتماعية أو تطوعية مناسبة للمهارات والقدرة.",
+      "evidenceRationale": "WHO cites community groups and volunteering among meaningful social interventions; HRSD highlights older adults' contribution through volunteering.",
+      "sourceIds": [
+        "S04",
+        "S14"
+      ],
+      "validationStatus": "فرصة وليست مخاطرة",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-SOC-04",
+      "agent": "الاجتماعي",
+      "inputQuestions": "Q10 + Q11 + Q12",
+      "trigger": "انخفاض تواصل + شبكة ضعيفة + لا اهتمام بالمشاركة",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "طلب مراجعة اجتماعية/مرشد حالة لتحديد تدخل مناسب بدل فرض نشاط غير مرغوب.",
+      "evidenceRationale": "Social isolation requires individualized responses; multiple intervention types may be needed.",
+      "sourceIds": [
+        "S05"
+      ],
+      "validationStatus": "Prototype triage combination",
+      "confidence": "Medium",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-FIN-01",
+      "agent": "المالي",
+      "inputQuestions": "Q13",
+      "trigger": "وضوح مالي محدود/غير واضح",
+      "type": "Risk",
+      "escalation": "🟢 Self-Guided",
+      "recommendedAction": "بناء صورة مبسطة للدخل المتوقع والالتزامات والمصروفات، مع الرجوع لخدمات GOSI الرسمية لمعلومات المعاش.",
+      "evidenceRationale": "GOSI provides pension-related services and SAMA emphasizes clear financial information and literacy.",
+      "sourceIds": [
+        "S11",
+        "S12"
+      ],
+      "validationStatus": "لا يقدم استثمارًا شخصيًا",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-FIN-02",
+      "agent": "المالي",
+      "inputQuestions": "Q14",
+      "trigger": "ضغط مالي متوقع مرتفع",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "إحالة لمستشار مالي مؤهل/جهة رسمية عند تعقيد الالتزامات؛ وهج يكتفي بالتنظيم والتثقيف.",
+      "evidenceRationale": "SAMA consumer-protection framework stresses financial education and understanding risks and choices.",
+      "sourceIds": [
+        "S12",
+        "S13"
+      ],
+      "validationStatus": "Prototype escalation threshold; expert approval required",
+      "confidence": "Medium",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-FIN-03",
+      "agent": "المالي",
+      "inputQuestions": "Q15",
+      "trigger": "لا يوجد احتياطي أو غير متأكد",
+      "type": "Risk",
+      "escalation": "🟢 Self-Guided",
+      "recommendedAction": "اقتراح خطة طوارئ وميزانية عامة غير استثمارية، بدون توصية بأوراق مالية أو منتجات محددة.",
+      "evidenceRationale": "SAMA promotes financial literacy, planning, understanding spending and saving concepts.",
+      "sourceIds": [
+        "S12",
+        "S13"
+      ],
+      "validationStatus": "No personalized investment advice",
+      "confidence": "Medium",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-FIN-04",
+      "agent": "المالي",
+      "inputQuestions": "Q13 + Q14 + Q15",
+      "trigger": "وضوح منخفض + ضغط مرتفع + لا احتياطي",
+      "type": "Risk",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "رفع أولوية مراجعة مالية بشرية، مع ملخص منظم للدخل/الالتزامات/المصاريف دون تقديم توصية استثمارية.",
+      "evidenceRationale": "Multiple financial-preparedness signals justify conservative human review in the MVP.",
+      "sourceIds": [
+        "S11",
+        "S12"
+      ],
+      "validationStatus": "Prototype heuristic",
+      "confidence": "Medium",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-EXP-01",
+      "agent": "الخبرات",
+      "inputQuestions": "Q16",
+      "trigger": "يرغب في الاستمرار باستثمار الخبرة",
+      "type": "Opportunity",
+      "escalation": "🟢 Opportunity",
+      "recommendedAction": "إظهار مسار فرص بدل بطاقة مخاطر، ثم مطابقة التفضيلات مع إرشاد/تدريب/تطوع/عمل مرن.",
+      "evidenceRationale": "WHO healthy ageing includes contributing to society; HRSD highlights transfer of experience and knowledge.",
+      "sourceIds": [
+        "S06",
+        "S14"
+      ],
+      "validationStatus": "Core differentiator",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-EXP-02",
+      "agent": "الخبرات",
+      "inputQuestions": "Q17",
+      "trigger": "اختيار الإرشاد أو نقل المعرفة",
+      "type": "Opportunity",
+      "escalation": "🟢 Opportunity",
+      "recommendedAction": "اقتراح فرص Mentoring ونقل معرفة بين الأجيال.",
+      "evidenceRationale": "HRSD explicitly highlights benefiting from older adults' professional/scientific experience and transferring knowledge to younger generations.",
+      "sourceIds": [
+        "S14"
+      ],
+      "validationStatus": "مصدر سعودي رسمي",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-EXP-03",
+      "agent": "الخبرات",
+      "inputQuestions": "Q17 + Q12",
+      "trigger": "تطوع + اهتمام اجتماعي",
+      "type": "Opportunity",
+      "escalation": "🟢 Opportunity",
+      "recommendedAction": "اقتراح فرصة تطوعية/مجتمعية توظف الخبرة وتدعم التواصل الاجتماعي في الوقت نفسه.",
+      "evidenceRationale": "Volunteering can support contribution and social connection.",
+      "sourceIds": [
+        "S04",
+        "S14"
+      ],
+      "validationStatus": "Cross-agent opportunity",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-EXP-04",
+      "agent": "الخبرات",
+      "inputQuestions": "Q8 + Q9 + Q16",
+      "trigger": "هدف غير واضح + أثر كبير للهوية + رغبة باستثمار الخبرة",
+      "type": "Opportunity",
+      "escalation": "🟢 / 🟠 if distress high",
+      "recommendedAction": "أولوية لمسار معنى وهدف عبر mentoring/consulting/volunteering، مع دعم نفسي إن كان الضيق مرتفعًا.",
+      "evidenceRationale": "Loss of purpose can be a retirement stressor while contribution to society is part of functional ability.",
+      "sourceIds": [
+        "S04",
+        "S06",
+        "S14"
+      ],
+      "validationStatus": "Cross-agent opportunity + wellbeing",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-ORCH-01",
+      "agent": "Orchestrator",
+      "inputQuestions": "Q2 + Q4 + Q5 + Q11",
+      "trigger": "مرض مزمن + نشاط منخفض + صعوبة حركة + شبكة دعم ضعيفة",
+      "type": "Cross-domain",
+      "escalation": "🟠 Human Review",
+      "recommendedAction": "اقتراح تدخل متعدد الأهداف مثل نشاط جماعي منخفض الشدة فقط إذا كان مناسبًا طبيًا؛ تسبق ذلك مراجعة ملاءمة الحركة عند وجود صعوبة.",
+      "evidenceRationale": "Group activity can address activity and social connection, while mobility limitations require safety tailoring.",
+      "sourceIds": [
+        "S01",
+        "S05",
+        "S09"
+      ],
+      "validationStatus": "لا يقترح نشاطًا جماعيًا إذا فعّل Safety Rule",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-ORCH-02",
+      "agent": "Orchestrator",
+      "inputQuestions": "Q7 + Q8 + Q10 + Q16 + Q17",
+      "trigger": "قلق انتقال + فقد روتين/تواصل + رغبة في الإرشاد",
+      "type": "Cross-domain",
+      "escalation": "🟢 Opportunity / 🟠 if severe distress",
+      "recommendedAction": "إعطاء أولوية لمسار mentoring يحافظ على المعنى والتواصل ويستثمر الخبرة، مع دعم نفسي إذا لزم.",
+      "evidenceRationale": "Purpose, social connection and contribution are linked domains in healthy ageing and retirement adjustment.",
+      "sourceIds": [
+        "S04",
+        "S05",
+        "S06",
+        "S14"
+      ],
+      "validationStatus": "Explainable cross-agent synthesis",
+      "confidence": "High",
+      "interpretationLabel": null
+    },
+    {
+      "ruleId": "KB-ORCH-03",
+      "agent": "Orchestrator",
+      "inputQuestions": "Any",
+      "trigger": "وجود Safety Flag أحمر",
+      "type": "Safety",
+      "escalation": "🔴 Human Escalation",
+      "recommendedAction": "إيقاف التوصية الآلية في المجال المتأثر، إنشاء AI Case Summary، وتوجيهه للمسار البشري المعتمد.",
+      "evidenceRationale": "Safety-critical decisions should be separated from generative recommendations in Wahaj governance.",
+      "sourceIds": [
+        "S01",
+        "S04"
+      ],
+      "validationStatus": "Governance rule; local protocol required",
+      "confidence": "High",
+      "interpretationLabel": null
+    }
+  ],
+  "humanEscalationRules": [
+    {
+      "ruleId": "ESC-01",
+      "domain": "الصحة / الحركة",
+      "trigger": "ألم أو دوار أو ضيق نفس أثناء النشاط",
+      "level": "🔴 Human Escalation",
+      "priority": "فوري",
+      "systemAction": "إيقاف مسار زيادة النشاط",
+      "humanDestination": "مختص صحي / طوارئ حسب شدة الحالة",
+      "signalsSent": "أعراض السلامة أثناء النشاط",
+      "sourceIds": [
+        "S01"
+      ],
+      "ruleBasis": "قاعدة مصدرية مباشرة",
+      "guardrail": "لا يسمح للـLLM بتجاوزها"
+    },
+    {
+      "ruleId": "ESC-02",
+      "domain": "الصحة",
+      "trigger": "مرض مزمن + متابعة/التزام منخفض",
+      "level": "🟠 Human Review",
+      "priority": "قريب",
+      "systemAction": "إعداد AI Case Summary لمراجعة خطة المتابعة الحالية والالتزام بها",
+      "humanDestination": "طبيب/رعاية أولية أو مختص مناسب",
+      "signalsSent": "الحالة المزمنة + ضعف الالتزام",
+      "sourceIds": [
+        "S15"
+      ],
+      "ruleBasis": "فرز محافظ لأولوية المتابعة؛ لا يعني خطرًا طبيًا مرتفعًا",
+      "guardrail": "لا تشخيص ولا تعديل أدوية؛ عتبة التصعيد تعتمد من مختص قبل الإنتاج"
+    },
+    {
+      "ruleId": "ESC-03",
+      "domain": "الحركة",
+      "trigger": "صعوبة حركة/توازن متوسطة أو كبيرة",
+      "level": "🟠 Human Review",
+      "priority": "قريب",
+      "systemAction": "تقييم القدرة الوظيفية وملاءمة النشاط",
+      "humanDestination": "مختص صحي/علاج طبيعي حسب الحالة",
+      "signalsSent": "درجة صعوبة الحركة",
+      "sourceIds": [
+        "S01",
+        "S09"
+      ],
+      "ruleBasis": "مدعومة بإرشادات الحركة والتوازن",
+      "guardrail": "لا تشخيص لسبب الصعوبة"
+    },
+    {
+      "ruleId": "ESC-04",
+      "domain": "النفسي",
+      "trigger": "قلق شديد + فقد هدف/هوية أو ضعف دعم اجتماعي",
+      "level": "🟠 Human Review",
+      "priority": "قريب",
+      "systemAction": "دعم انتقال + مراجعة بشرية عند الحاجة",
+      "humanDestination": "مختص نفسي مؤهل",
+      "signalsSent": "إجابات Q7-Q11",
+      "sourceIds": [
+        "S04",
+        "S05"
+      ],
+      "ruleBasis": "Prototype heuristic; اعتماد مختص مطلوب",
+      "guardrail": "لا تشخيص اكتئاب/قلق"
+    },
+    {
+      "ruleId": "ESC-05",
+      "domain": "النفسي",
+      "trigger": "إفصاح عن إيذاء النفس أو خطر فوري",
+      "level": "🔴 Human Escalation",
+      "priority": "فوري",
+      "systemAction": "تجاوز المسار العادي وتفعيل بروتوكول السلامة المحلي",
+      "humanDestination": "طوارئ/مختص نفسي حسب البروتوكول",
+      "signalsSent": "نص صريح أو إشارة سلامة معتمدة",
+      "sourceIds": [
+        "S04"
+      ],
+      "ruleBasis": "قاعدة حوكمة عالية الحساسية",
+      "guardrail": "يجب اعتماد مسار محلي قبل الإنتاج"
+    },
+    {
+      "ruleId": "ESC-06",
+      "domain": "الاجتماعي",
+      "trigger": "شبكة دعم شبه معدومة + انخفاض تواصل + ضيق نفسي مرتفع",
+      "level": "🟠 Human Review",
+      "priority": "قريب",
+      "systemAction": "إحالة لمرشد حالة/خدمة اجتماعية مناسبة",
+      "humanDestination": "أخصائي اجتماعي أو جهة مجتمعية",
+      "signalsSent": "Q10-Q11 مع Q7/Q8",
+      "sourceIds": [
+        "S04",
+        "S05"
+      ],
+      "ruleBasis": "Cross-domain heuristic",
+      "guardrail": "تجنب فرض تدخل غير مرغوب"
+    },
+    {
+      "ruleId": "ESC-07",
+      "domain": "المالي",
+      "trigger": "ضغط مالي مرتفع + وضوح منخفض + لا احتياطي",
+      "level": "🟠 Human Review",
+      "priority": "مجدول",
+      "systemAction": "تنظيم الحالة وإحالة لمختص مؤهل",
+      "humanDestination": "مستشار مالي مؤهل/جهة رسمية",
+      "signalsSent": "Q13-Q15",
+      "sourceIds": [
+        "S11",
+        "S12"
+      ],
+      "ruleBasis": "Prototype heuristic",
+      "guardrail": "ممنوع توصيات استثمارية شخصية"
+    },
+    {
+      "ruleId": "ESC-08",
+      "domain": "الخبرات",
+      "trigger": "رغبة في الاستفادة من الخبرة",
+      "level": "🟢 Opportunity",
+      "priority": "مجدول",
+      "systemAction": "مطابقة مع فرص مناسبة",
+      "humanDestination": "مرشد مهني/شريك برنامج عند الحاجة",
+      "signalsSent": "Q16-Q17",
+      "sourceIds": [
+        "S06",
+        "S14"
+      ],
+      "ruleBasis": "فرصة لا تصعيد خطر",
+      "guardrail": "لا حاجة لمختص صحي"
+    },
+    {
+      "ruleId": "ESC-09",
+      "domain": "Orchestrator",
+      "trigger": "أي Safety Flag أحمر من وكيل متخصص",
+      "level": "🔴 Human Escalation",
+      "priority": "حسب قاعدة المصدر",
+      "systemAction": "إيقاف التوصية الآلية بالمجال وإنشاء ملخص حالة",
+      "humanDestination": "حسب المجال",
+      "signalsSent": "agent + signals + rule id + source",
+      "sourceIds": [
+        "S01",
+        "S04"
+      ],
+      "ruleBasis": "قاعدة حوكمة",
+      "guardrail": "الـOrchestrator لا يخفض مستوى التصعيد"
+    }
+  ],
+  "sourceRegistry": [
+    {
+      "id": "S01",
+      "organization": "وزارة الصحة السعودية",
+      "title": "النشاط البدني للمسنين",
+      "authority": "Saudi MOH",
+      "evidenceType": "Official Saudi guidance",
+      "status": "2026-06-13 / modified 2026-09-06",
+      "url": "https://www.moh.gov.sa/healthawareness/educationalcontent/health-of-older-persons/pages/002.aspx",
+      "usage": "النشاط البدني لكبار السن، التدرج، التوازن، الوقاية من السقوط، وإشارات التوقف أثناء النشاط"
+    },
+    {
+      "id": "S02",
+      "organization": "وزارة الصحة السعودية",
+      "title": "السكري والنشاط البدني",
+      "authority": "Saudi MOH",
+      "evidenceType": "Official Saudi guidance",
+      "status": "2026",
+      "url": "https://www.moh.gov.sa/healthawareness/educationalcontent/diseases/diabetic/pages/diabetes-and-physical-activity.aspx",
+      "usage": "فوائد النشاط البدني مع السكري وضرورة مراعاة الحالة الصحية والقدرة الفردية"
+    },
+    {
+      "id": "S03",
+      "organization": "وزارة الصحة السعودية",
+      "title": "التوعية بارتفاع ضغط الدم",
+      "authority": "Saudi MOH",
+      "evidenceType": "Official Saudi guidance",
+      "status": "2026",
+      "url": "https://www.moh.gov.sa/awarenessplateform/chronicdisease/pages/hypertension.aspx",
+      "usage": "ارتفاع الضغط عامل خطر لأمراض القلب والسكتة ويمكن التحكم به بنمط حياة صحي وأدوية عند الحاجة"
+    },
+    {
+      "id": "S04",
+      "organization": "منظمة الصحة العالمية",
+      "title": "الصحة النفسية لكبار السن",
+      "authority": "WHO",
+      "evidenceType": "WHO fact sheet",
+      "status": "2026-07-20",
+      "url": "https://www.who.int/ar/news-room/fact-sheets/detail/mental-health-of-older-adults",
+      "usage": "التقاعد، انخفاض الدخل، فقدان الشعور بالهدف، العزلة والوحدة كعوامل مرتبطة بالصحة النفسية"
+    },
+    {
+      "id": "S05",
+      "organization": "منظمة الصحة العالمية",
+      "title": "الحد من العزلة الاجتماعية والوحدة لدى كبار السن",
+      "authority": "WHO",
+      "evidenceType": "WHO evidence overview",
+      "status": "Current",
+      "url": "https://www.who.int/health-topics/ageing/reducing-social-isolation-and-loneliness-among-older-people",
+      "usage": "أهمية الروابط الاجتماعية والتدخلات مثل المجموعات المجتمعية والدعم والتواصل"
+    },
+    {
+      "id": "S06",
+      "organization": "منظمة الصحة العالمية",
+      "title": "Healthy ageing and functional ability",
+      "authority": "WHO",
+      "evidenceType": "WHO Q&A / framework",
+      "status": "2020",
+      "url": "https://www.who.int/news-room/questions-and-answers/item/healthy-ageing-and-functional-ability",
+      "usage": "القدرة الوظيفية تشمل الحركة وبناء العلاقات والمساهمة في المجتمع"
+    },
+    {
+      "id": "S07",
+      "organization": "منظمة الصحة العالمية",
+      "title": "Ageing and health",
+      "authority": "WHO",
+      "evidenceType": "WHO fact sheet",
+      "status": "2025-10-01",
+      "url": "https://www.who.int/en/news-room/fact-sheets/detail/ageing-and-health",
+      "usage": "الشيخوخة الصحية، الأمراض المزمنة، السقوط، التقاعد كتحول حياتي، والفرص بعد التقاعد"
+    },
+    {
+      "id": "S08",
+      "organization": "منظمة الصحة العالمية",
+      "title": "WHO guidelines on physical activity and sedentary behaviour",
+      "authority": "WHO",
+      "evidenceType": "WHO guideline",
+      "status": "2020",
+      "url": "https://www.who.int/publications/i/item/9789240014886",
+      "usage": "إرشادات مبنية على الأدلة للنشاط البدني والسلوك الخامل لكبار السن والمصابين بأمراض مزمنة"
+    },
+    {
+      "id": "S09",
+      "organization": "منظمة الصحة العالمية",
+      "title": "Physical activity and sedentary behaviour: a brief to support older people",
+      "authority": "WHO",
+      "evidenceType": "WHO implementation brief",
+      "status": "2022",
+      "url": "https://www.who.int/publications/i/item/9789240064096",
+      "usage": "دعم النشاط البدني والوقاية من السقوط وتراجع القدرة الوظيفية لدى كبار السن"
+    },
+    {
+      "id": "S10",
+      "organization": "التأمينات الاجتماعية",
+      "title": "طلب التقاعد",
+      "authority": "GOSI",
+      "evidenceType": "Official Saudi service",
+      "status": "Modified 2026-08-22",
+      "url": "https://beta.gosi.gov.sa/en/services/individual-services/Request_Retirement_Pension",
+      "usage": "قناة رقمية للتقديم على التقاعد ومتابعة الطلب؛ مفيد كـ trigger محتمل لبدء رحلة وهج"
+    },
+    {
+      "id": "S11",
+      "organization": "التأمينات الاجتماعية",
+      "title": "خدمات المتقاعدين",
+      "authority": "GOSI",
+      "evidenceType": "Official Saudi service",
+      "status": "Current",
+      "url": "https://www.gosi.gov.sa/GOSIOnline/Services_for_Retired",
+      "usage": "خدمات وحاسبات ومعلومات معاشات للمتقاعدين عبر القنوات الإلكترونية"
+    },
+    {
+      "id": "S12",
+      "organization": "البنك المركزي السعودي",
+      "title": "Financial Consumer Protection Principles / financial education",
+      "authority": "SAMA",
+      "evidenceType": "Official Saudi regulation",
+      "status": "In force",
+      "url": "https://rulebook.sama.gov.sa/en/introduction-15",
+      "usage": "التثقيف والوعي المالي وتمكين المستهلك من فهم المخاطر والخيارات وفق احتياجاته"
+    },
+    {
+      "id": "S13",
+      "organization": "البنك المركزي السعودي",
+      "title": "جهود تعزيز الثقافة المالية",
+      "authority": "SAMA",
+      "evidenceType": "Official Saudi news / policy context",
+      "status": "2021-09-14",
+      "url": "https://www.sama.gov.sa/en-us/mediacenter/news/pages/news-692.aspx",
+      "usage": "رفع الثقافة المالية وفهم الخدمات والمنتجات وحماية مصالح المستهلك"
+    },
+    {
+      "id": "S14",
+      "organization": "وزارة الموارد البشرية والتنمية الاجتماعية",
+      "title": "رعاية كبار السن",
+      "authority": "HRSD",
+      "evidenceType": "Official Saudi guidance",
+      "status": "Current",
+      "url": "https://www.hrsd.gov.sa/en/care-about-you/care-elderly",
+      "usage": "دور كبار السن في التطوع ونقل الخبرات والمعرفة والاستفادة من الطاقات المهنية والعلمية"
+    },
+    {
+      "id": "S15",
+      "organization": "وزارة الصحة السعودية",
+      "title": "التحكم في السكري",
+      "authority": "Saudi MOH",
+      "evidenceType": "Official Saudi guidance",
+      "status": "Current / updated 2026-09-06",
+      "url": "https://www.moh.gov.sa/healthawareness/educationalcontent/diseases/diabetic/pages/diabetes-management.aspx",
+      "usage": "إدارة السكري، الالتزام بالخطة الدوائية كما وصفها الطبيب، القياس المنتظم، المتابعة مع فريق الرعاية الصحية، والرعاية الروتينية."
+    },
+    {
+      "id": "S16",
+      "organization": "منظمة الصحة العالمية",
+      "title": "تعزيز النشاط البدني للمسنين: مجموعة أدوات العمل",
+      "authority": "WHO",
+      "evidenceType": "WHO evidence-based toolkit",
+      "status": "2023 / current",
+      "url": "https://www.who.int/ar/publications/i/item/9789240076648",
+      "usage": "برامج وخدمات نشاط بدني ملائمة لاحتياجات كبار السن وتفضيلاتهم وأهدافهم، بما في ذلك من يتعايشون مع السكري وارتفاع ضغط الدم والتهاب المفاصل."
+    }
+  ],
+  "counts": {
+    "agents": 7,
+    "questions": 18,
+    "knowledgeRules": 29,
+    "humanEscalationRules": 9,
+    "sources": 16
+  }
+}

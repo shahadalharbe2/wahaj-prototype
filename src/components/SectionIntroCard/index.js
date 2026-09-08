@@ -1,0 +1,1 @@
+export { SectionIntroCard } from './SectionIntroCard';

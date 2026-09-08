@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وهج — عرض النماذج الأولية</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Design Tokens (from global.css) ─────────────────────────────────── */
+:root {
+  --cp: #C96B2B; --ca: #E8873D; --cl: #F7C68A; --cg: #FFF3E0;
+  --bg: #FFFDF9; --cs: #FFF8F0; --csa: #FEF3E2; --cb: #EAD9C6; --cbs: #C8A882;
+  --ct1: #1C1612; --ct2: #5A4A38; --ctm: #9B856D; --cto: #FFFFFF;
+  --cheal: #D64E4E; --cact: #3A7D44; --cment: #7C5CD8; --csoc: #2472BC;
+  --cfin: #B07D0A; --cpurp: #B05E35;
+  --r-sm:6px; --r-md:12px; --r-lg:20px; --r-xl:28px; --r-full:9999px;
+  --sh-sm: 0 1px 3px rgba(90,50,10,.08);
+  --sh-md: 0 4px 16px rgba(90,50,10,.10);
+  --sh-lg: 0 8px 32px rgba(90,50,10,.14);
+  --ff: 'IBM Plex Sans Arabic','Segoe UI',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:var(--ff);color:var(--ct1);background:#f0ece6;direction:rtl;text-align:right;-webkit-font-smoothing:antialiased}
+
+/* ── Page Shell ──────────────────────────────────────────────────────── */
+.page-title {
+  text-align:center; padding:48px 24px 8px;
+  font-size:32px; font-weight:700; color:var(--ct1);
+  letter-spacing:-.01em;
+}
+.page-subtitle {
+  text-align:center; color:var(--ct2); font-size:15px; padding:0 24px 40px;
+  max-width:600px; margin:0 auto; line-height:1.7;
+}
+.section-title {
+  text-align:center; font-size:13px; font-weight:600;
+  color:var(--ctm); letter-spacing:.06em; text-transform:uppercase;
+  padding:48px 24px 16px;
+}
+.flow-row {
+  display:flex; gap:32px; align-items:flex-start; justify-content:center;
+  padding:0 40px 48px; flex-wrap:wrap; max-width:1440px; margin:0 auto;
+}
+.flow-row.centered { justify-content:center; }
+
+/* Arrow between screens */
+.arrow {
+  display:flex; align-items:center; padding-top:120px; flex-shrink:0;
+  color:var(--cp); font-size:22px; font-weight:700;
+}
+.arrow-down {
+  display:block; text-align:center; color:var(--cp);
+  font-size:24px; padding:8px 0 4px;
+}
+
+/* ── Screen Frame ─────────────────────────────────────────────────────── */
+.screen {
+  background:var(--bg); border-radius:20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08), 0 12px 40px rgba(90,50,10,.14);
+  overflow:hidden; flex-shrink:0;
+  border:1.5px solid rgba(201,107,43,.18);
+  position:relative;
+}
+.screen--w360  { width:360px; }
+.screen--w420  { width:420px; }
+.screen--w480  { width:480px; }
+.screen--w560  { width:560px; }
+.screen-label  {
+  text-align:center; font-size:11px; font-weight:600; color:var(--ctm);
+  letter-spacing:.05em; margin-top:10px;
+  text-transform:uppercase;
+}
+.screen-num {
+  display:inline-block; width:22px; height:22px; border-radius:50%;
+  background:var(--cp); color:#fff; font-size:11px; font-weight:700;
+  text-align:center; line-height:22px; margin-bottom:4px;
+}
+
+/* ── Shared UI Atoms ──────────────────────────────────────────────────── */
+/* Logo */
+.logo { display:flex; align-items:center; gap:10px; }
+.logo-mark {
+  position:relative; width:32px; height:32px;
+  display:flex; align-items:center; justify-content:center;
+}
+.logo-ring {
+  position:absolute; border-radius:50%;
+  border:1.5px solid var(--ca); opacity:.25;
+}
+.logo-ring.r3{width:30px;height:30px;}
+.logo-ring.r2{width:22px;height:22px;opacity:.35;}
+.logo-ring.r1{width:15px;height:15px;opacity:.55;}
+.logo-core {
+  width:8px; height:8px; border-radius:50%;
+  background:var(--cp); position:relative; z-index:1;
+}
+.logo-text { font-size:18px; font-weight:700; color:var(--cp); }
+.logo-text.lg { font-size:26px; }
+.logo-text.sm { font-size:15px; }
+
+/* Buttons */
+.btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:var(--ff); font-weight:600; border:none; cursor:pointer;
+  border-radius:var(--r-md); transition:120ms ease; text-decoration:none;
+  white-space:nowrap;
+}
+.btn-primary {
+  background:var(--cp); color:#fff; padding:12px 24px; font-size:15px;
+  box-shadow:0 2px 12px rgba(201,107,43,.3);
+}
+.btn-secondary {
+  background:transparent; color:var(--cp); padding:10px 20px; font-size:14px;
+  border:1.5px solid var(--cb); background:var(--cs);
+}
+.btn-ghost {
+  background:transparent; color:var(--ct2); padding:10px 18px; font-size:14px;
+}
+.btn-lg { padding:16px 36px; font-size:17px; border-radius:var(--r-lg); }
+.btn-sm { padding:8px 16px; font-size:13px; }
+.btn-full { width:100%; }
+
+/* Header bar */
+.top-bar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 20px; border-bottom:1px solid var(--cb);
+  background:rgba(255,253,249,.97); position:sticky; top:0; z-index:5;
+}
+.top-bar-tag {
+  font-size:13px; font-weight:600; color:var(--cp); letter-spacing:.03em;
+}
+
+/* Progress pill */
+.pill {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:12px; font-weight:600; color:var(--cp);
+  background:var(--cg); border:1px solid var(--cl);
+  border-radius:var(--r-full); padding:2px 12px; white-space:nowrap;
+}
+.pill.green { color:#2a6b34; background:#edf7ee; border-color:#9dd1a4; }
+.pill.orange { color:#8a4f00; background:#fff3e0; border-color:var(--cl); }
+
+/* Option row */
+.opt {
+  display:flex; align-items:center; gap:12px; padding:11px 14px;
+  border-radius:var(--r-md); border:1.5px solid var(--cb);
+  background:var(--bg); margin-bottom:8px; font-size:14px; color:var(--ct1);
+}
+.opt.selected {
+  border-color:var(--cp); background:var(--csa);
+  font-weight:500; color:var(--cp);
+}
+.opt-dot { font-size:17px; color:var(--cp); flex-shrink:0; min-width:20px; text-align:center; }
+
+/* Card base */
+.card {
+  background:var(--cs); border:1.5px solid var(--cb);
+  border-radius:var(--r-xl); padding:24px; box-shadow:var(--sh-sm);
+}
+
+/* Section header strip */
+.section-strip {
+  background:var(--csa); border-bottom:1px solid var(--cb); padding:14px 20px;
+}
+.section-strip-inner { display:flex; flex-direction:column; gap:6px; }
+.section-strip-meta { display:flex; align-items:center; gap:10px; }
+.section-strip-title { display:flex; align-items:center; gap:8px; margin-top:4px; }
+.section-strip h1 { font-size:17px; font-weight:700; color:var(--ct1); margin:0; }
+.section-strip p { font-size:13px; color:var(--ct2); margin:0; line-height:1.6; }
+.section-icon { font-size:22px; line-height:1; }
+
+/* Domain stepper */
+.stepper { display:flex; align-items:flex-start; justify-content:center; gap:0; width:100%; }
+.step { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; position:relative; min-width:0; }
+.step:not(:last-child)::after {
+  content:''; position:absolute; top:12px;
+  right:calc(-50% + 12px); left:calc(50% + 12px);
+  height:1.5px; background:var(--cb);
+}
+.step.done:not(:last-child)::after { background:#3a7d44; }
+.step-dot {
+  width:26px; height:26px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; border:2px solid var(--cb); background:var(--bg); z-index:1;
+  position:relative;
+}
+.step.done .step-dot { background:#3a7d44; border-color:#3a7d44; color:#fff; font-weight:700; }
+.step.active .step-dot {
+  background:var(--cp); border-color:var(--cp);
+  box-shadow:0 0 0 3px rgba(201,107,43,.18);
+}
+.step.pending .step-dot { opacity:.4; }
+.step-lbl { font-size:10px; color:var(--ctm); text-align:center; max-width:50px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.step.active .step-lbl { color:var(--cp); font-weight:600; }
+.step.done .step-lbl { color:#3a7d44; }
+
+/* Question card */
+.qcard { background:var(--cs); border:1.5px solid var(--cb); border-radius:var(--r-xl); padding:24px; box-shadow:var(--sh-sm); margin-bottom:8px; }
+.qnum {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%;
+  background:var(--cg); border:1.5px solid var(--cl);
+  color:var(--cp); font-size:13px; font-weight:700; margin-bottom:10px;
+}
+.qtext { font-size:16px; font-weight:600; color:var(--ct1); line-height:1.4; margin-bottom:16px; }
+.qhint { font-size:12px; color:var(--ctm); margin-bottom:12px; margin-top:-8px; }
+
+/* Nav bar */
+.nav-bar {
+  position:sticky; bottom:0;
+  background:rgba(255,253,249,.97); border-top:1px solid var(--cb);
+  padding:12px 20px 10px;
+}
+.nav-inner { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.nav-footnote { text-align:center; font-size:11px; color:var(--ctm); margin-top:6px; }
+
+/* Status chips */
+.chip { display:inline-block; font-size:12px; font-weight:600; border-radius:var(--r-full); padding:3px 12px; }
+.chip-red { background:#fdf0ef; color:#b32c1e; border:1px solid #f5c6c2; }
+.chip-orange { background:#fff8ee; color:#8a4f00; border:1px solid var(--cl); }
+.chip-blue { background:#edf4fd; color:#1e5ba8; border:1px solid #bcd5f5; }
+.chip-green { background:#edf7ee; color:#2a6b34; border:1px solid #9dd1a4; }
+
+/* Agent analysis card */
+.agent-card {
+  background:var(--cs); border:1.5px solid var(--cb); border-radius:var(--r-lg);
+  padding:16px; margin-bottom:10px;
+}
+.agent-card.running { border-color:var(--ca); background:#fff8f0; }
+.agent-card.done { border-color:#9dd1a4; background:#f7fdf8; }
+.agent-card-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.agent-icon { font-size:22px; flex-shrink:0; }
+.agent-label { font-size:14px; font-weight:600; color:var(--ct1); flex:1; }
+.agent-status { font-size:12px; font-weight:500; }
+.agent-status.waiting { color:var(--ctm); }
+.agent-status.running { color:var(--ca); }
+.agent-status.done { color:#2a6b34; }
+.agent-progress { height:4px; border-radius:var(--r-full); background:var(--cb); overflow:hidden; }
+.agent-progress-fill { height:100%; border-radius:var(--r-full); background:linear-gradient(90deg,var(--cp),var(--ca)); width:65%; }
+
+/* Orchestrator */
+.orch {
+  background:var(--cg); border:1.5px solid var(--cl); border-radius:var(--r-xl);
+  padding:20px; margin-top:8px;
+}
+.orch.running { border-color:var(--ca); }
+.orch.done { border-color:#9dd1a4; background:#f7fdf8; }
+.orch-header { display:flex; align-items:center; gap:12px; }
+.orch-icon {
+  position:relative; width:38px; height:38px;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.orch-ring { position:absolute; border-radius:50%; border:1.5px solid var(--ca); }
+.orch-ring.r3{width:36px;height:36px;opacity:.2;}
+.orch-ring.r2{width:26px;height:26px;opacity:.35;}
+.orch-core-sym { font-size:14px; color:var(--cp); font-weight:700; position:relative; z-index:1; }
+.orch-title { font-size:15px; font-weight:700; color:var(--ct1); }
+.orch-sub { font-size:12px; color:var(--ctm); }
+.orch-desc { font-size:13px; color:var(--ct2); margin-top:10px; line-height:1.6; }
+.orch-done-mark { font-size:18px; color:#2a6b34; font-weight:700; margin-right:auto; }
+
+/* Result agent card */
+.res-card {
+  background:var(--cs); border:1.5px solid var(--cb); border-radius:var(--r-lg);
+  padding:16px; margin-bottom:10px;
+}
+.res-card.risk { border-color:#f5c6c2; background:#fdf8f8; }
+.res-card.risk-high { border-color:#e06060; background:#fdf0ef; }
+.res-card.opportunity { border-color:#bcd5f5; background:#f4f8fe; }
+.res-card-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.res-card-title { font-size:15px; font-weight:700; color:var(--ct1); flex:1; }
+.res-badge {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:12px; font-weight:600; border-radius:var(--r-full); padding:3px 10px;
+}
+.badge-stable { background:#edf7ee; color:#2a6b34; }
+.badge-risk   { background:#fff8ee; color:#8a4f00; }
+.badge-high   { background:#fdf0ef; color:#b32c1e; }
+.badge-opp    { background:#edf4fd; color:#1e5ba8; }
+.level-pill { font-size:11px; font-weight:600; border-radius:var(--r-full); padding:2px 8px; flex-shrink:0; }
+.level-red { background:#fdf0ef; color:#b32c1e; }
+.level-orange { background:#fff3e0; color:#8a4f00; }
+.level-green { background:#edf7ee; color:#2a6b34; }
+.res-summary { font-size:13px; color:var(--ct2); line-height:1.6; margin-bottom:10px; }
+.signal-list { list-style:none; display:flex; flex-direction:column; gap:4px; }
+.signal-list li { font-size:12px; color:var(--ct2); padding:4px 0; padding-right:14px; position:relative; }
+.signal-list li::before { content:'•'; position:absolute; right:0; color:var(--cp); }
+.rec-row { display:flex; gap:8px; align-items:flex-start; margin-top:10px; padding-top:10px; border-top:1px solid var(--cb); }
+.rec-label { font-size:12px; font-weight:600; color:var(--cp); white-space:nowrap; }
+.rec-text { font-size:13px; color:var(--ct1); line-height:1.5; }
+
+/* Priority card */
+.priority-card {
+  background:var(--cs); border:1.5px solid var(--cb); border-radius:var(--r-lg);
+  padding:16px; margin-bottom:10px;
+}
+.priority-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:10px; }
+.priority-rank {
+  width:30px; height:30px; border-radius:50%; background:var(--cp); color:#fff;
+  font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.priority-title { font-size:14px; font-weight:700; color:var(--ct1); margin-bottom:6px; }
+.priority-action { font-size:13px; color:var(--ct2); line-height:1.6; }
+.domain-tag {
+  display:inline-flex; align-items:center; gap:4px;
+  font-size:11px; font-weight:500; color:var(--ctm);
+  background:var(--cg); border:1px solid var(--cb); border-radius:var(--r-full);
+  padding:2px 8px; margin-left:4px; margin-top:4px;
+}
+.why-panel {
+  background:#fffaf5; border:1px solid var(--cb); border-radius:var(--r-md);
+  padding:12px 14px; margin-top:10px;
+}
+.why-panel dt { font-size:12px; font-weight:600; color:var(--ctm); margin-top:8px; }
+.why-panel dt:first-child { margin-top:0; }
+.why-panel dd { font-size:13px; color:var(--ct2); line-height:1.6; }
+
+/* Escalation banner */
+.esc-banner {
+  background:#fff8f0; border:1.5px solid #e8873d; border-radius:var(--r-lg); padding:16px;
+}
+.esc-banner h3 { font-size:14px; font-weight:700; color:#7a3c00; margin-bottom:8px; }
+.esc-item { display:flex; align-items:center; gap:10px; margin-top:8px; }
+.esc-domain { font-size:13px; font-weight:600; color:var(--ct1); }
+.esc-spec { font-size:12px; color:var(--ctm); }
+
+/* Modal */
+.modal-overlay {
+  position:absolute; inset:0; background:rgba(255,253,249,.88);
+  display:flex; align-items:center; justify-content:center;
+  padding:16px; z-index:10;
+}
+.modal {
+  background:var(--bg); border:1.5px solid var(--cb); border-radius:var(--r-xl);
+  padding:0; width:100%; max-height:580px; overflow:auto;
+  box-shadow:var(--sh-lg);
+}
+.modal-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--cb); position:sticky; top:0;
+  background:var(--bg); z-index:1;
+}
+.modal-title { font-size:16px; font-weight:700; color:var(--ct1); }
+.modal-close {
+  width:28px; height:28px; border-radius:50%; border:1px solid var(--cb);
+  background:var(--cs); font-size:12px; cursor:pointer; color:var(--ctm);
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-body { padding:16px 20px; }
+.modal-disclaimer {
+  background:#fff8ee; border:1px solid var(--cl); border-radius:var(--r-md);
+  padding:10px 14px; font-size:12px; color:#7a4800; margin-bottom:16px; line-height:1.6;
+}
+.modal-dl dt { font-size:12px; font-weight:600; color:var(--ctm); margin-top:12px; }
+.modal-dl dt:first-child { margin-top:0; }
+.modal-dl dd { font-size:13px; color:var(--ct2); line-height:1.6; }
+.modal-actions { padding:16px 20px; border-top:1px solid var(--cb); display:flex; gap:10px; flex-wrap:wrap; }
+
+/* Completion check */
+.check-wrap {
+  display:flex; align-items:center; justify-content:center;
+  padding:32px 0 16px; flex-direction:column; gap:8px;
+}
+.check-circle {
+  width:72px; height:72px; border-radius:50%; background:#3a7d44;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:32px; font-weight:700; box-shadow:0 0 0 10px #d9f0dd, 0 0 0 20px #edf7ee;
+}
+
+/* Area pills */
+.areas-row { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:0 16px; }
+.area-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  font-size:13px; font-weight:500; border-radius:var(--r-full);
+  padding:6px 14px; border:1px solid;
+}
+.ap-health  { background:#fdf0ef; color:var(--cheal); border-color:#f5c6c2; }
+.ap-activity{ background:#edf7ee; color:var(--cact);  border-color:#9dd1a4; }
+.ap-mental  { background:#f3eeff; color:var(--cment); border-color:#c9b8f0; }
+.ap-social  { background:#edf4fd; color:var(--csoc);  border-color:#bcd5f5; }
+.ap-financial{ background:#fdf8e8; color:var(--cfin); border-color:#e8d894; }
+.ap-purpose { background:#fdf0e8; color:var(--cpurp); border-color:#f5c6a0; }
+
+/* Assessment card */
+.asmnt-card {
+  background:linear-gradient(135deg, #fff3e0, var(--cs));
+  border:1.5px solid var(--cl); border-radius:var(--r-xl);
+  padding:24px; display:flex; flex-direction:column; gap:16px;
+}
+.asmnt-card-title { font-size:20px; font-weight:700; color:var(--ct1); }
+.asmnt-stats { display:flex; gap:16px; flex-wrap:wrap; }
+.asmnt-stat { display:flex; flex-direction:column; gap:2px; }
+.asmnt-stat-val { font-size:22px; font-weight:700; color:var(--cp); }
+.asmnt-stat-lbl { font-size:12px; color:var(--ctm); }
+
+/* Proto notice */
+.proto-notice {
+  background:var(--csa); border:1px solid var(--cb); border-radius:var(--r-md);
+  padding:12px 16px; font-size:12px; color:var(--ctm); line-height:1.6; margin:0 20px 16px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE HEADER
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="page-title">وهج — نماذج واجهة المستخدم</p>
+<p class="page-subtitle">عرض مرئي لكامل رحلة التقييم من الدخول حتى النتائج والمتابعة</p>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 1 — WELCOME & ENTRY
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">١ — الشاشة الرئيسية والدخول</p>
+<div class="flow-row centered">
+
+  <!-- Screen 1: Welcome -->
+  <div>
+    <div class="screen screen--w420">
+      <!-- Header -->
+      <div class="top-bar">
+        <div class="logo">
+          <div class="logo-mark">
+            <span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span>
+            <span class="logo-core"></span>
+          </div>
+          <span class="logo-text lg">وهج</span>
+        </div>
+      </div>
+      <!-- Hero -->
+      <div style="padding:32px 24px 24px; position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-40px;left:-40px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,#fff3e0,transparent 70%);opacity:.7;pointer-events:none;"></div>
+        <h1 style="font-size:20px;font-weight:700;color:var(--ct1);line-height:1.4;margin-bottom:14px;position:relative;">
+          بداية التقاعد ليست نهاية رحلة، بل بداية مرحلة جديدة تستحق أن تُصمَّم لك.
+        </h1>
+        <p style="font-size:14px;color:var(--ct2);line-height:1.7;position:relative;">
+          وهج منظومة ذكية ترافقك منذ بداية إجراءات التقاعد، لفهم احتياجاتك والاستعداد للمرحلة القادمة.
+        </p>
+      </div>
+      <!-- Area Pills -->
+      <div style="padding:0 24px 20px;">
+        <p style="font-size:12px;font-weight:600;color:var(--ctm);margin-bottom:12px;">وهج يرافقك في ستة محاور</p>
+        <div class="areas-row" style="justify-content:flex-start;padding:0;">
+          <span class="area-pill ap-health">🫀 الصحة</span>
+          <span class="area-pill ap-activity">🏃 النشاط</span>
+          <span class="area-pill ap-mental">🧠 الرفاه النفسي</span>
+          <span class="area-pill ap-social">🤝 الحياة الاجتماعية</span>
+          <span class="area-pill ap-financial">💼 المالي</span>
+          <span class="area-pill ap-purpose">🌟 الخبرات والهدف</span>
+        </div>
+      </div>
+      <!-- Assessment Card -->
+      <div style="padding:0 24px 24px;">
+        <div class="asmnt-card">
+          <div class="asmnt-card-title">تقييم وهج 360°</div>
+          <div class="asmnt-stats">
+            <div class="asmnt-stat"><span class="asmnt-stat-val">18</span><span class="asmnt-stat-lbl">سؤالًا</span></div>
+            <div class="asmnt-stat"><span class="asmnt-stat-val">6</span><span class="asmnt-stat-lbl">محاور</span></div>
+            <div class="asmnt-stat"><span class="asmnt-stat-val">3–5</span><span class="asmnt-stat-lbl">دقائق</span></div>
+          </div>
+          <p style="font-size:13px;color:var(--ctm);">رحلة مصممة لك</p>
+        </div>
+        <div style="margin-top:16px;">
+          <button class="btn btn-primary btn-lg btn-full">ابدأ رحلتي مع وهج</button>
+        </div>
+        <p style="font-size:12px;color:var(--ctm);margin-top:12px;line-height:1.6;text-align:center;">
+          🔒 خصوصيتك أولويتنا، ولن تتم مشاركة معلوماتك مع أي جهة دون موافقتك.
+        </p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">1</span><br>الشاشة الرئيسية</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 2 — ASSESSMENT: HEALTH + PHYSICAL
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٢ — تقييم وهج 360° · المحاور الأول والثاني</p>
+<div class="flow-row">
+
+  <!-- Screen 2: Health Agent -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <!-- Stepper -->
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step active"><div class="step-dot">🫀</div><span class="step-lbl">الصحة</span></div>
+          <div class="step pending"><div class="step-dot">🏃</div><span class="step-lbl">الحركة</span></div>
+          <div class="step pending"><div class="step-dot">🧠</div><span class="step-lbl">النفسي</span></div>
+          <div class="step pending"><div class="step-dot">🤝</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step pending"><div class="step-dot">💼</div><span class="step-lbl">المالي</span></div>
+          <div class="step pending"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <!-- Section header -->
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 1 من 6</span>
+            <span style="font-size:12px;color:var(--ctm);">3 أسئلة</span>
+          </div>
+          <div class="section-strip-title">
+            <span class="section-icon">🫀</span>
+            <h1>الصحة والأمراض المزمنة</h1>
+          </div>
+          <p>نبدأ بفهم حالتك الصحية والمتابعة الحالية لبناء خط أساس مناسب لك.</p>
+        </div>
+      </div>
+      <!-- Questions -->
+      <div style="padding:20px 16px 8px;">
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">كيف تقيّم صحتك بشكل عام؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>ممتازة</div>
+          <div class="opt"><span class="opt-dot">○</span>جيدة جدًا</div>
+          <div class="opt"><span class="opt-dot">○</span>جيدة</div>
+          <div class="opt"><span class="opt-dot">○</span>مقبولة</div>
+          <div class="opt"><span class="opt-dot">○</span>ضعيفة</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">هل لديك أي من الحالات الصحية التالية؟</p>
+          <p class="qhint">يمكنك اختيار أكثر من إجابة</p>
+          <div class="opt selected"><span class="opt-dot">☑</span>لا توجد</div>
+          <div class="opt"><span class="opt-dot">☐</span>السكري</div>
+          <div class="opt"><span class="opt-dot">☐</span>ارتفاع ضغط الدم</div>
+          <div class="opt"><span class="opt-dot">☐</span>أمراض القلب</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">3</div>
+          <p class="qtext">إلى أي مدى تلتزم بالأدوية والفحوصات والمواعيد الطبية الموصى بها لك؟</p>
+          <div class="opt"><span class="opt-dot">○</span>دائمًا</div>
+          <div class="opt selected"><span class="opt-dot">●</span>غالبًا</div>
+          <div class="opt"><span class="opt-dot">○</span>أحيانًا</div>
+          <div class="opt"><span class="opt-dot">○</span>نادرًا</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← الرئيسية</button>
+          <button class="btn btn-primary">التالي: النشاط والحركة →</button>
+        </div>
+        <p class="nav-footnote">18 سؤالًا • 6 محاور • 3–5 دقائق</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">2</span><br>المحور 1 — الصحة</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 3: Physical Agent -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الصحة</span></div>
+          <div class="step active"><div class="step-dot">🏃</div><span class="step-lbl">الحركة</span></div>
+          <div class="step pending"><div class="step-dot">🧠</div><span class="step-lbl">النفسي</span></div>
+          <div class="step pending"><div class="step-dot">🤝</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step pending"><div class="step-dot">💼</div><span class="step-lbl">المالي</span></div>
+          <div class="step pending"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 2 من 6</span>
+            <span style="font-size:12px;color:var(--ctm);">3 أسئلة</span>
+          </div>
+          <div class="section-strip-title">
+            <span class="section-icon">🏃</span>
+            <h1>النشاط والحركة</h1>
+          </div>
+          <p>نتعرف على مستوى نشاطك الحالي وتوقعاتك بعد التقاعد.</p>
+        </div>
+      </div>
+      <div style="padding:20px 16px 8px;">
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">كم يومًا في الأسبوع تمارس نشاطًا بدنيًا مثل المشي أو الرياضة؟</p>
+          <div class="opt"><span class="opt-dot">○</span>لا أمارس نشاطًا حاليًا</div>
+          <div class="opt selected"><span class="opt-dot">●</span>يوم إلى يومين</div>
+          <div class="opt"><span class="opt-dot">○</span>3 إلى 4 أيام</div>
+          <div class="opt"><span class="opt-dot">○</span>5 أيام أو أكثر</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">هل تواجه صعوبة في المشي أو صعود الدرج أو التوازن؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>لا أواجه صعوبة</div>
+          <div class="opt"><span class="opt-dot">○</span>صعوبة بسيطة</div>
+          <div class="opt"><span class="opt-dot">○</span>صعوبة متوسطة</div>
+          <div class="opt"><span class="opt-dot">○</span>صعوبة كبيرة</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">3</div>
+          <p class="qtext">كيف تتوقع أن يتغير مستوى نشاطك اليومي بعد التقاعد؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>سيزداد</div>
+          <div class="opt"><span class="opt-dot">○</span>سيبقى تقريبًا كما هو</div>
+          <div class="opt"><span class="opt-dot">○</span>قد ينخفض قليلًا</div>
+          <div class="opt"><span class="opt-dot">○</span>أتوقع أن ينخفض بشكل واضح</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← الصحة</button>
+          <button class="btn btn-primary">التالي: الرفاه النفسي →</button>
+        </div>
+        <p class="nav-footnote">18 سؤالًا • 6 محاور • 3–5 دقائق</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">3</span><br>المحور 2 — النشاط والحركة</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 3 — ASSESSMENT: PSYCHOLOGICAL + SOCIAL
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٣ — تقييم وهج 360° · المحاور الثالث والرابع</p>
+<div class="flow-row">
+
+  <!-- Screen 4: Psychological Agent -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الصحة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الحركة</span></div>
+          <div class="step active"><div class="step-dot">🧠</div><span class="step-lbl">النفسي</span></div>
+          <div class="step pending"><div class="step-dot">🤝</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step pending"><div class="step-dot">💼</div><span class="step-lbl">المالي</span></div>
+          <div class="step pending"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 3 من 6</span>
+            <span style="font-size:12px;color:var(--ctm);">3 أسئلة</span>
+          </div>
+          <div class="section-strip-title">
+            <span class="section-icon">🧠</span>
+            <h1>الرفاه النفسي والانتقال للتقاعد</h1>
+          </div>
+          <p>نستكشف مشاعرك تجاه التقاعد وتصورك للهدف والهوية في هذه المرحلة.</p>
+        </div>
+      </div>
+      <div style="padding:20px 16px 8px;">
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">كيف تشعر تجاه انتقالك إلى مرحلة التقاعد؟</p>
+          <div class="opt"><span class="opt-dot">○</span>متحمس جدًا</div>
+          <div class="opt selected"><span class="opt-dot">●</span>متحمس</div>
+          <div class="opt"><span class="opt-dot">○</span>محايد</div>
+          <div class="opt"><span class="opt-dot">○</span>أشعر ببعض القلق</div>
+          <div class="opt"><span class="opt-dot">○</span>أشعر بقلق كبير</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">إلى أي مدى لديك تصور واضح لهدف وروتين يومي بعد التقاعد؟</p>
+          <div class="opt"><span class="opt-dot">○</span>واضح جدًا</div>
+          <div class="opt selected"><span class="opt-dot">●</span>واضح إلى حد ما</div>
+          <div class="opt"><span class="opt-dot">○</span>غير متأكد</div>
+          <div class="opt"><span class="opt-dot">○</span>ليس لدي تصور واضح حتى الآن</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">3</div>
+          <p class="qtext">إلى أي مدى تعتقد أن ترك العمل قد يؤثر على شعورك بالإنجاز أو القيمة أو الهوية؟</p>
+          <div class="opt"><span class="opt-dot">○</span>لن يؤثر</div>
+          <div class="opt"><span class="opt-dot">○</span>تأثير بسيط</div>
+          <div class="opt selected"><span class="opt-dot">●</span>تأثير متوسط</div>
+          <div class="opt"><span class="opt-dot">○</span>تأثير كبير</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← الحركة</button>
+          <button class="btn btn-primary">التالي: الحياة الاجتماعية →</button>
+        </div>
+        <p class="nav-footnote">18 سؤالًا • 6 محاور • 3–5 دقائق</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">4</span><br>المحور 3 — الرفاه النفسي</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 5: Social Agent -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الصحة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الحركة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">النفسي</span></div>
+          <div class="step active"><div class="step-dot">🤝</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step pending"><div class="step-dot">💼</div><span class="step-lbl">المالي</span></div>
+          <div class="step pending"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 4 من 6</span>
+            <span style="font-size:12px;color:var(--ctm);">3 أسئلة</span>
+          </div>
+          <div class="section-strip-title">
+            <span class="section-icon">🤝</span>
+            <h1>الحياة الاجتماعية</h1>
+          </div>
+          <p>نقيّم شبكة علاقاتك واهتمامك بالمشاركة المجتمعية بعد التقاعد.</p>
+        </div>
+      </div>
+      <div style="padding:20px 16px 8px;">
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">بعد التقاعد، كيف تتوقع أن يتغير تواصلك مع الأشخاص الذين تتفاعل معهم حاليًا؟</p>
+          <div class="opt"><span class="opt-dot">○</span>سيزداد</div>
+          <div class="opt"><span class="opt-dot">○</span>سيبقى كما هو</div>
+          <div class="opt selected"><span class="opt-dot">●</span>سينخفض قليلًا</div>
+          <div class="opt"><span class="opt-dot">○</span>سينخفض بشكل واضح</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">هل لديك شبكة من العائلة أو الأصدقاء يمكنك التواصل والاعتماد عليها خارج بيئة العمل؟</p>
+          <div class="opt"><span class="opt-dot">○</span>شبكة قوية</div>
+          <div class="opt selected"><span class="opt-dot">●</span>شبكة جيدة</div>
+          <div class="opt"><span class="opt-dot">○</span>شبكة محدودة</div>
+          <div class="opt"><span class="opt-dot">○</span>تكاد لا توجد</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">3</div>
+          <p class="qtext">هل ترغب في المشاركة في أنشطة اجتماعية أو مجتمعية أو تطوعية بعد التقاعد؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>نعم بالتأكيد</div>
+          <div class="opt"><span class="opt-dot">○</span>ربما</div>
+          <div class="opt"><span class="opt-dot">○</span>غير متأكد</div>
+          <div class="opt"><span class="opt-dot">○</span>لا حاليًا</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← النفسي</button>
+          <button class="btn btn-primary">التالي: الاستعداد المالي →</button>
+        </div>
+        <p class="nav-footnote">18 سؤالًا • 6 محاور • 3–5 دقائق</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">5</span><br>المحور 4 — الحياة الاجتماعية</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 4 — ASSESSMENT: FINANCIAL + EXPERIENCE/PURPOSE
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٤ — تقييم وهج 360° · المحاور الخامس والسادس</p>
+<div class="flow-row">
+
+  <!-- Screen 6: Financial Agent -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الصحة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الحركة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">النفسي</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step active"><div class="step-dot">💼</div><span class="step-lbl">المالي</span></div>
+          <div class="step pending"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 5 من 6</span>
+            <span style="font-size:12px;color:var(--ctm);">3 أسئلة</span>
+          </div>
+          <div class="section-strip-title">
+            <span class="section-icon">💼</span>
+            <h1>الاستعداد المالي</h1>
+          </div>
+          <p>نفهم وضوحك المالي ومستوى استعدادك للالتزامات بعد التقاعد.</p>
+        </div>
+      </div>
+      <div style="padding:20px 16px 8px;">
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">إلى أي مدى لديك تصور واضح عن دخلك والتزاماتك ومصروفاتك بعد التقاعد؟</p>
+          <div class="opt"><span class="opt-dot">○</span>واضح جدًا</div>
+          <div class="opt selected"><span class="opt-dot">●</span>واضح إلى حد ما</div>
+          <div class="opt"><span class="opt-dot">○</span>لدي تصور محدود</div>
+          <div class="opt"><span class="opt-dot">○</span>غير واضح</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">هل تتوقع أن تسبب الالتزامات المالية بعد التقاعد ضغطًا عليك؟</p>
+          <div class="opt"><span class="opt-dot">○</span>لا أتوقع ضغطًا</div>
+          <div class="opt selected"><span class="opt-dot">●</span>ضغط بسيط</div>
+          <div class="opt"><span class="opt-dot">○</span>ضغط متوسط</div>
+          <div class="opt"><span class="opt-dot">○</span>ضغط مرتفع</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">3</div>
+          <p class="qtext">هل لديك احتياطي أو خطة مالية للتعامل مع المصروفات غير المتوقعة؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>نعم</div>
+          <div class="opt"><span class="opt-dot">○</span>إلى حد ما</div>
+          <div class="opt"><span class="opt-dot">○</span>لا</div>
+          <div class="opt"><span class="opt-dot">○</span>غير متأكد</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← الاجتماعي</button>
+          <button class="btn btn-primary">التالي: الخبرة والهدف →</button>
+        </div>
+        <p class="nav-footnote">18 سؤالًا • 6 محاور • 3–5 دقائق</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">6</span><br>المحور 5 — الاستعداد المالي</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 7: Experience & Purpose Agent -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الصحة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الحركة</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">النفسي</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step done"><div class="step-dot">✓</div><span class="step-lbl">المالي</span></div>
+          <div class="step active"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 6 من 6</span>
+            <span style="font-size:12px;color:var(--ctm);">3 أسئلة</span>
+          </div>
+          <div class="section-strip-title">
+            <span class="section-icon">🌟</span>
+            <h1>الخبرة والهدف بعد التقاعد</h1>
+          </div>
+          <p>نختم بفهم كيف تريد توظيف خبرتك وما يشغل تفكيرك أكثر.</p>
+        </div>
+      </div>
+      <div style="padding:20px 16px 8px;">
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">هل ترغب في الاستمرار في الاستفادة من خبراتك ومهاراتك بعد التقاعد؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>نعم</div>
+          <div class="opt"><span class="opt-dot">○</span>ربما</div>
+          <div class="opt"><span class="opt-dot">○</span>غير متأكد</div>
+          <div class="opt"><span class="opt-dot">○</span>لا</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">كيف تفضّل الاستفادة من خبرتك بعد التقاعد؟</p>
+          <p class="qhint">يمكنك اختيار أكثر من إجابة</p>
+          <div class="opt selected"><span class="opt-dot">☑</span>الإرشاد المهني (Mentoring)</div>
+          <div class="opt selected"><span class="opt-dot">☑</span>الاستشارات</div>
+          <div class="opt"><span class="opt-dot">☐</span>التدريب</div>
+          <div class="opt"><span class="opt-dot">☐</span>التطوع</div>
+        </div>
+        <div class="qcard">
+          <div class="qnum">3</div>
+          <p class="qtext">ما أكثر جانب يشغلك عند التفكير في حياتك بعد التقاعد؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>الاستقرار المالي</div>
+          <div class="opt"><span class="opt-dot">○</span>صحتي</div>
+          <div class="opt"><span class="opt-dot">○</span>الرفاه النفسي</div>
+          <div class="opt"><span class="opt-dot">○</span>الاستفادة من خبراتي</div>
+          <div style="margin-top:12px;"><textarea style="width:100%;font-family:var(--ff);font-size:13px;border:1.5px solid var(--cb);border-radius:12px;padding:10px 12px;background:var(--bg);color:var(--ct1);resize:none;direction:rtl;" rows="2" placeholder="إذا رغبت، أخبرنا أكثر عمّا يشغلك"></textarea></div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← المالي</button>
+          <button class="btn btn-primary">اكتشف مساري مع وهج ✨</button>
+        </div>
+        <p class="nav-footnote">18 سؤالًا • 6 محاور • 3–5 دقائق</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">7</span><br>المحور 6 — الخبرة والهدف</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 5 — COMPLETION + AI ANALYSIS
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٥ — اكتمال التقييم وتحليل الوكلاء</p>
+<div class="flow-row">
+
+  <!-- Screen 8: Completion -->
+  <div>
+    <div class="screen screen--w360">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+      </div>
+      <div class="check-wrap">
+        <div class="check-circle">✓</div>
+        <p style="font-size:11px;color:var(--ctm);">اكتمل</p>
+      </div>
+      <div style="padding:0 24px 24px; text-align:center;">
+        <h2 style="font-size:20px;font-weight:700;color:var(--ct1);margin-bottom:10px;">اكتمل تقييم وهج 360°</h2>
+        <p style="font-size:14px;color:var(--ct2);line-height:1.7;margin-bottom:24px;">
+          شكرًا لك. أصبح لدينا الآن تصور أولي متكامل عن استعدادك للمرحلة القادمة.
+        </p>
+        <button class="btn btn-primary btn-lg btn-full">عرض تحليلي</button>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+          <button class="btn btn-ghost btn-sm">إعادة التقييم</button>
+          <button class="btn btn-ghost btn-sm">العودة للرئيسية</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">8</span><br>اكتمال التقييم</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 9: AI Analysis Loading -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:32px 20px 20px; position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,243,224,.9),transparent 70%);pointer-events:none;"></div>
+        <h2 style="font-size:20px;font-weight:700;color:var(--ct1);margin-bottom:8px;text-align:center;position:relative;">وهج يحلل صورتك المتكاملة</h2>
+        <p style="font-size:13px;color:var(--ct2);text-align:center;line-height:1.7;margin-bottom:20px;position:relative;">يعمل وكلاء وهج المتخصصون على تحليل إجاباتك وربط المؤشرات لبناء مسار يناسب احتياجاتك.</p>
+
+        <!-- Agent cards -->
+        <div class="agent-card done">
+          <div class="agent-card-header">
+            <span class="agent-icon">🫀</span>
+            <span class="agent-label">الصحة والأمراض المزمنة</span>
+            <span class="agent-status done">اكتمل ✓</span>
+          </div>
+        </div>
+        <div class="agent-card done">
+          <div class="agent-card-header">
+            <span class="agent-icon">🏃</span>
+            <span class="agent-label">النشاط والحركة</span>
+            <span class="agent-status done">اكتمل ✓</span>
+          </div>
+        </div>
+        <div class="agent-card running">
+          <div class="agent-card-header">
+            <span class="agent-icon">🧠</span>
+            <span class="agent-label">الرفاه النفسي</span>
+            <span class="agent-status running">جارٍ التحليل...</span>
+          </div>
+          <div class="agent-progress"><div class="agent-progress-fill"></div></div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <span class="agent-icon">🤝</span>
+            <span class="agent-label">الحياة الاجتماعية</span>
+            <span class="agent-status waiting">بانتظار التحليل</span>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <span class="agent-icon">💼</span>
+            <span class="agent-label">الاستقرار المالي</span>
+            <span class="agent-status waiting">بانتظار التحليل</span>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-header">
+            <span class="agent-icon">🌟</span>
+            <span class="agent-label">الخبرات والهدف</span>
+            <span class="agent-status waiting">بانتظار التحليل</span>
+          </div>
+        </div>
+
+        <!-- Orchestrator -->
+        <div class="orch" style="margin-top:12px;">
+          <div class="orch-header">
+            <div class="orch-icon">
+              <span class="orch-ring r3"></span><span class="orch-ring r2"></span>
+              <span class="orch-core-sym">⟳</span>
+            </div>
+            <div>
+              <p class="orch-title">منسق وهج الذكي</p>
+              <p class="orch-sub">Wahaj Orchestrator</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">9</span><br>تحليل الوكلاء — جارٍ</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 10: Analysis Complete -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:24px 20px 20px;">
+        <h2 style="font-size:18px;font-weight:700;color:var(--ct1);margin-bottom:6px;text-align:center;">وهج يحلل صورتك المتكاملة</h2>
+        <p style="font-size:13px;color:var(--ct2);text-align:center;line-height:1.7;margin-bottom:16px;">يعمل وكلاء وهج المتخصصون على تحليل إجاباتك وربط المؤشرات.</p>
+        <div class="agent-card done" style="margin-bottom:6px;">
+          <div class="agent-card-header"><span class="agent-icon">🫀</span><span class="agent-label">الصحة والأمراض المزمنة</span><span class="agent-status done">اكتمل ✓</span></div>
+        </div>
+        <div class="agent-card done" style="margin-bottom:6px;">
+          <div class="agent-card-header"><span class="agent-icon">🏃</span><span class="agent-label">النشاط والحركة</span><span class="agent-status done">اكتمل ✓</span></div>
+        </div>
+        <div class="agent-card done" style="margin-bottom:6px;">
+          <div class="agent-card-header"><span class="agent-icon">🧠</span><span class="agent-label">الرفاه النفسي</span><span class="agent-status done">اكتمل ✓</span></div>
+        </div>
+        <div class="agent-card done" style="margin-bottom:6px;">
+          <div class="agent-card-header"><span class="agent-icon">🤝</span><span class="agent-label">الحياة الاجتماعية</span><span class="agent-status done">اكتمل ✓</span></div>
+        </div>
+        <div class="agent-card done" style="margin-bottom:6px;">
+          <div class="agent-card-header"><span class="agent-icon">💼</span><span class="agent-label">الاستقرار المالي</span><span class="agent-status done">اكتمل ✓</span></div>
+        </div>
+        <div class="agent-card done" style="margin-bottom:12px;">
+          <div class="agent-card-header"><span class="agent-icon">🌟</span><span class="agent-label">الخبرات والهدف</span><span class="agent-status done">اكتمل ✓</span></div>
+        </div>
+        <div class="orch done">
+          <div class="orch-header">
+            <div class="orch-icon"><span class="orch-ring r3"></span><span class="orch-ring r2"></span><span class="orch-core-sym">⟳</span></div>
+            <div><p class="orch-title">منسق وهج الذكي</p><p class="orch-sub">Wahaj Orchestrator</p></div>
+            <span class="orch-done-mark">✓</span>
+          </div>
+          <p class="orch-desc">يربط منسق وهج نتائج الوكلاء لاكتشاف العلاقات وتحديد الأولويات.</p>
+        </div>
+        <p style="text-align:center;font-size:13px;color:#2a6b34;font-weight:600;margin-top:14px;">اكتملت جميع التحليلات — جارٍ تحضير نتائجك...</p>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">10</span><br>تحليل الوكلاء — اكتمل</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 6 — RESULTS DASHBOARD
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٦ — لوحة نتائج وهج</p>
+<div class="flow-row">
+
+  <!-- Screen 11: Results — Summary + 6 agents -->
+  <div>
+    <div class="screen screen--w480">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <button class="btn btn-ghost btn-sm">الرئيسية</button>
+      </div>
+      <div style="padding:28px 20px 0; position:relative; overflow:hidden;">
+        <div style="position:absolute;top:-30px;right:-30px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,243,224,.9),transparent 70%);pointer-events:none;"></div>
+        <h1 style="font-size:22px;font-weight:700;color:var(--ct1);margin-bottom:6px;position:relative;">صورتك المتكاملة مع وهج</h1>
+        <p style="font-size:13px;color:var(--ct2);line-height:1.7;margin-bottom:20px;position:relative;">حلّل وهج إجاباتك عبر ستة مجالات مترابطة لتحديد الأولويات والفرص المناسبة لمرحلة التقاعد.</p>
+      </div>
+
+      <!-- Summary card -->
+      <div style="padding:0 20px 16px;">
+        <p style="font-size:12px;font-weight:600;color:var(--ctm);margin-bottom:10px;">الملخص العام</p>
+        <div style="background:var(--cs);border:1.5px solid var(--cb);border-radius:20px;padding:18px;">
+          <p style="font-size:14px;color:var(--ct2);line-height:1.7;margin-bottom:12px;">مستوى استعدادك العام جيد. الأولوية الأبرز هي تعزيز النشاط البدني المنتظم للحفاظ على الصحة العامة وجودة الحياة بعد التقاعد.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="chip chip-orange">1 يحتاج اهتمام</span>
+            <span class="chip chip-blue">2 فرصة</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 Agent result cards -->
+      <div style="padding:0 20px 16px;">
+        <p style="font-size:12px;font-weight:600;color:var(--ctm);margin-bottom:10px;">تحليل المجالات الستة</p>
+
+        <div class="res-card" style="margin-bottom:8px;">
+          <div class="res-card-header">
+            <span style="font-size:20px;">🫀</span>
+            <span class="res-card-title">الصحة والأمراض المزمنة</span>
+            <span class="res-badge badge-stable">🟢 مستقر</span>
+          </div>
+          <p class="res-summary">الصحة الذاتية ممتازة، لا حالات مزمنة، التزام متوسط بالمواعيد الطبية.</p>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">مواصلة الزيارات الدورية وتطوير خطة صيانة صحية استباقية.</span></div>
+        </div>
+
+        <div class="res-card risk" style="margin-bottom:8px;">
+          <div class="res-card-header">
+            <span style="font-size:20px;">🏃</span>
+            <span class="res-card-title">النشاط والحركة</span>
+            <span class="res-badge badge-risk">🟠 يحتاج اهتمام</span>
+            <span class="level-pill level-orange">متوسط</span>
+          </div>
+          <p class="res-summary">النشاط البدني منخفض (يوم–يومان أسبوعيًا). الانتقال للتقاعد قد يزيد الخطر.</p>
+          <ul class="signal-list" style="margin-bottom:10px;">
+            <li>تردد في النشاط البدني الأسبوعي</li>
+            <li>إمكانية انخفاض الحركة بعد التقاعد</li>
+          </ul>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">وضع هدف تدريجي للوصول إلى 150 دقيقة أسبوعيًا من النشاط المعتدل.</span></div>
+        </div>
+
+        <div class="res-card opportunity" style="margin-bottom:8px;">
+          <div class="res-card-header">
+            <span style="font-size:20px;">🧠</span>
+            <span class="res-card-title">الرفاه النفسي</span>
+            <span class="res-badge badge-opp">🔵 فرصة</span>
+          </div>
+          <p class="res-summary">تحمس معتدل نحو التقاعد مع بعض الغموض في الهدف اليومي.</p>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">استكشاف برامج التحضير النفسي للتقاعد وبناء هوية ما بعد العمل.</span></div>
+        </div>
+
+        <div class="res-card" style="margin-bottom:8px;">
+          <div class="res-card-header">
+            <span style="font-size:20px;">🤝</span>
+            <span class="res-card-title">الحياة الاجتماعية</span>
+            <span class="res-badge badge-stable">🟢 مستقر</span>
+          </div>
+          <p class="res-summary">شبكة اجتماعية جيدة مع رغبة في المشاركة المجتمعية والتطوع.</p>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">الاستفادة من الرغبة التطوعية وربطها بالمهارات المهنية.</span></div>
+        </div>
+
+        <div class="res-card" style="margin-bottom:8px;">
+          <div class="res-card-header">
+            <span style="font-size:20px;">💼</span>
+            <span class="res-card-title">الاستقرار المالي</span>
+            <span class="res-badge badge-stable">🟢 مستقر</span>
+          </div>
+          <p class="res-summary">وضوح مالي معقول، ضغط مالي بسيط، احتياطي موجود.</p>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">مراجعة خطة الميزانية ومناقشة السيناريوهات مع مستشار مالي.</span></div>
+        </div>
+
+        <div class="res-card opportunity" style="margin-bottom:8px;">
+          <div class="res-card-header">
+            <span style="font-size:20px;">🌟</span>
+            <span class="res-card-title">الخبرات والهدف</span>
+            <span class="res-badge badge-opp">🔵 فرصة</span>
+          </div>
+          <p class="res-summary">رغبة قوية في الإرشاد والاستشارات. الهاجس الأكبر هو الاستقرار المالي.</p>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">استكشاف برامج Mentoring وفرص الاستشارات الجزئية.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">11</span><br>لوحة النتائج — الملخص والوكلاء</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 12: Priorities + Escalation -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <button class="btn btn-ghost btn-sm">الرئيسية</button>
+      </div>
+      <div style="padding:20px 20px 0;">
+
+        <!-- Cross-insights -->
+        <p style="font-size:12px;font-weight:600;color:var(--ctm);margin-bottom:10px;">ما الذي ربطه وهج؟</p>
+        <p style="font-size:12px;color:var(--ct2);margin-bottom:10px;">لاحظ منسق وهج الذكي هذه الروابط بين مجالات تقييمك.</p>
+        <div style="background:var(--cs);border:1.5px solid var(--cb);border-radius:16px;padding:14px;margin-bottom:16px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+            <span class="domain-tag">🏃 الحركة</span>
+            <span class="domain-tag">🧠 النفسي</span>
+          </div>
+          <p style="font-size:13px;color:var(--ct2);line-height:1.6;margin-bottom:8px;">ضعف النشاط البدني وغياب الروتين الواضح عوامل متشابكة قد تؤثر على الرفاه النفسي بعد التقاعد.</p>
+          <p style="font-size:12px;color:var(--ct1);margin-bottom:4px;"><strong>التدخل المقترح:</strong> دمج النشاط البدني في روتين هادف يومي يدعم الصحة النفسية والجسدية.</p>
+          <p style="font-size:11px;color:var(--ctm);">قاعدة تجريبية — تتطلب اعتماد مختص</p>
+        </div>
+
+        <!-- Priorities -->
+        <p style="font-size:12px;font-weight:600;color:var(--ctm);margin-bottom:10px;">أولوياتك مع وهج</p>
+
+        <div class="priority-card">
+          <div class="priority-header">
+            <div class="priority-rank">1</div>
+            <div>
+              <p class="priority-title">تعزيز النشاط البدني المنتظم</p>
+              <div><span class="domain-tag">🏃 الحركة</span><span class="domain-tag">🧠 النفسي</span></div>
+            </div>
+          </div>
+          <p class="priority-action">البدء بخطة تدريجية: 3 أيام/أسبوع من المشي لمدة 30 دقيقة، مع ربط الهدف بالروتين اليومي.</p>
+          <div style="background:#fff8f0;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ctm);">▼ لماذا أوصى وهج بهذا؟</div>
+        </div>
+
+        <div class="priority-card">
+          <div class="priority-header">
+            <div class="priority-rank">2</div>
+            <div>
+              <p class="priority-title">بناء هوية ومعنى بعد التقاعد</p>
+              <div><span class="domain-tag">🧠 النفسي</span><span class="domain-tag">🌟 الخبرة</span></div>
+            </div>
+          </div>
+          <p class="priority-action">استكشاف برامج Mentoring ودور استشاري مرن يمنح شعورًا بالهدف والاستمرارية.</p>
+          <div style="background:#fff8f0;border-radius:10px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--ctm);">▼ لماذا أوصى وهج بهذا؟</div>
+        </div>
+
+        <!-- Escalation banner -->
+        <p style="font-size:12px;font-weight:600;color:var(--ctm);margin:16px 0 10px;">مراجعة مختص مقترحة</p>
+        <div class="esc-banner">
+          <h3>🔶 بناءً على إجاباتك، يقترح وهج مراجعة متخصصين في:</h3>
+          <div class="esc-item">
+            <span class="esc-domain">🏃 النشاط والحركة</span>
+            <span class="esc-spec">— أخصائي علاج طبيعي أو لياقة</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:10px;margin:20px 0 8px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm">إعادة التقييم</button>
+          <button class="btn btn-ghost btn-sm">الرئيسية</button>
+        </div>
+
+        <div class="proto-notice">
+          <strong>ملاحظة:</strong> نتائج وهج مبنية على قواعد تجريبية وتتطلب اعتماد مختصين. لا تُعدّ تشخيصًا طبيًا أو استشارة مالية.
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">12</span><br>الأولويات والروابط والإحالة</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 7 — EXPLAINABILITY + HUMAN-IN-THE-LOOP
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٧ — الشفافية والمراجعة البشرية</p>
+<div class="flow-row">
+
+  <!-- Screen 13: Explainability Panel (expanded) -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">شرح التوصية</span>
+      </div>
+      <div style="padding:20px;">
+        <div class="res-card risk">
+          <div class="res-card-header">
+            <span style="font-size:20px;">🏃</span>
+            <span class="res-card-title">النشاط والحركة</span>
+            <span class="res-badge badge-risk">🟠 يحتاج اهتمام</span>
+            <span class="level-pill level-orange">متوسط</span>
+          </div>
+          <p class="res-summary">النشاط البدني منخفض مع توقع محدود بعد التقاعد.</p>
+          <ul class="signal-list" style="margin-bottom:10px;">
+            <li>نشاط بدني أسبوعي منخفض (1–2 يوم)</li>
+            <li>لا صعوبة حركية حاليًا — نافذة فرصة</li>
+            <li>توقع ارتفاع النشاط بعد التقاعد — إيجابي</li>
+          </ul>
+          <div class="rec-row"><span class="rec-label">التوصية:</span><span class="rec-text">وضع هدف تدريجي للوصول إلى 150 دقيقة أسبوعيًا.</span></div>
+          <!-- Expanded explainability -->
+          <div style="background:#fffaf5;border:1px solid var(--cb);border-radius:12px;padding:14px;margin-top:14px;">
+            <p style="font-size:11px;font-weight:600;color:var(--ctm);margin-bottom:6px;">المؤشرات التي اعتمد عليها وهج</p>
+            <ul class="signal-list" style="margin-bottom:10px;">
+              <li>إجابة Q4: نشاط بدني 1–2 يوم/أسبوع</li>
+              <li>إجابة Q5: لا صعوبة حركية</li>
+              <li>إجابة Q6: توقع زيادة النشاط بعد التقاعد</li>
+            </ul>
+            <p style="font-size:11px;font-weight:600;color:var(--ctm);margin-bottom:6px;">سبب التوصية</p>
+            <p style="font-size:12px;color:var(--ct2);line-height:1.6;margin-bottom:10px;">النشاط البدني الحالي أقل من الحد الموصى به. الانتقال للتقاعد قد يقلل من الحركة التلقائية المرتبطة بالعمل.</p>
+            <p style="font-size:11px;font-weight:600;color:var(--ctm);margin-bottom:6px;">مصدر الدليل</p>
+            <div style="background:var(--cs);border:1px solid var(--cb);border-radius:8px;padding:10px;margin-bottom:8px;">
+              <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+                <span style="font-size:11px;font-weight:600;color:var(--ct1);">منظمة الصحة العالمية WHO</span>
+                <span style="font-size:10px;background:#edf4fd;color:#1e5ba8;border-radius:var(--r-full);padding:1px 6px;">إرشادات رسمية</span>
+              </div>
+              <p style="font-size:12px;color:var(--ct2);">Physical Activity Guidelines for Adults — 150 min/week moderate activity</p>
+              <p style="font-size:11px;color:var(--ctm);">الاستخدام: عتبة تقييم مستوى النشاط البدني الأسبوعي</p>
+            </div>
+            <p style="font-size:11px;font-weight:600;color:var(--ctm);margin-bottom:4px;">حالة القاعدة</p>
+            <span style="font-size:11px;background:#fff3e0;color:#8a4f00;border-radius:var(--r-full);padding:2px 10px;border:1px solid var(--cl);">⚠ قاعدة تجريبية للعرض — تتطلب اعتماد مختص</span>
+            <p style="font-size:10px;color:var(--ctm);margin-top:6px;">معرّف القاعدة: KB-P-002</p>
+          </div>
+          <button style="width:100%;margin-top:10px;padding:10px;border-radius:12px;border:1.5px solid #f5c6c2;background:#fdf0ef;color:#b32c1e;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;">🔶 مراجعة مختص مقترحة</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">13</span><br>شرح التوصية — الشفافية</div>
+  </div>
+
+  <div class="arrow">→</div>
+
+  <!-- Screen 14: Human Review Modal -->
+  <div>
+    <div class="screen screen--w420" style="min-height:580px;position:relative;">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">لوحة النتائج</span>
+      </div>
+      <!-- Background hint -->
+      <div style="padding:20px;opacity:.3;pointer-events:none;">
+        <p style="font-size:14px;color:var(--ct2);">لوحة النتائج في الخلفية...</p>
+      </div>
+      <!-- Modal overlay -->
+      <div class="modal-overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <h2 class="modal-title">ملخص الحالة للمختص</h2>
+            <button class="modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="modal-disclaimer">
+              هذا الملخص مولد بواسطة نموذج وهج الأولي لدعم المختص، ولا يمثل تشخيصًا أو قرارًا مهنيًا نهائيًا.
+            </div>
+            <dl class="modal-dl">
+              <dt>سبب الإحالة:</dt>
+              <dd>النشاط البدني منخفض مع توقع محدود بعد التقاعد.</dd>
+              <dt>المجال المرتبط:</dt>
+              <dd>النشاط والحركة</dd>
+              <dt>المؤشرات من تقييم وهج 360°:</dt>
+              <dd>
+                <ul class="signal-list">
+                  <li>نشاط بدني 1–2 يوم أسبوعيًا</li>
+                  <li>لا صعوبة حركية حاليًا</li>
+                  <li>توقع زيادة النشاط بعد التقاعد</li>
+                </ul>
+              </dd>
+              <dt>مستوى الأولوية:</dt>
+              <dd><span style="display:inline-block;padding:2px 10px;border-radius:var(--r-full);background:#fff3e0;color:#8a4f00;font-size:12px;font-weight:600;">مراجعة مختص</span> — متوسط</dd>
+              <dt>التدخل المطلوب من المختص:</dt>
+              <dd>وضع خطة نشاط مخصصة تتدرج من 30 إلى 150 دقيقة/أسبوع.</dd>
+              <dt>نوع المختص المقترح:</dt>
+              <dd>أخصائي علاج طبيعي أو مدرب لياقة معتمد</dd>
+              <dt>معرّف قاعدة التصعيد:</dt>
+              <dd style="font-size:11px;color:var(--ctm);font-family:monospace;">ESC-03</dd>
+              <dt>حالة الاعتماد:</dt>
+              <dd style="font-size:12px;color:var(--ctm);">قاعدة تجريبية للعرض — تتطلب اعتماد مختص</dd>
+            </dl>
+          </div>
+          <div style="padding:14px 20px;border-top:1px solid var(--cb);">
+            <p style="font-size:12px;color:var(--ctm);margin-bottom:10px;">إجراءات المختص (تجريبية):</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-primary btn-sm">اعتماد المسار</button>
+              <button class="btn btn-secondary btn-sm">تعديل المسار</button>
+              <button class="btn btn-ghost btn-sm">إحالة لخدمة أخرى</button>
+            </div>
+          </div>
+          <div style="padding:0 20px 16px;">
+            <button class="btn btn-primary btn-full" style="margin-top:8px;">طلب مراجعة مختص</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">14</span><br>مراجعة المختص (Human-in-the-Loop)</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     SECTION 8 — VALIDATION ERROR STATE
+═══════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">٨ — حالات خاصة: التحقق من الإجابات</p>
+<div class="flow-row centered">
+
+  <!-- Screen 15: Validation Error -->
+  <div>
+    <div class="screen screen--w420">
+      <div class="top-bar">
+        <div class="logo"><div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div><span class="logo-text sm">وهج</span></div>
+        <span class="top-bar-tag">تقييم وهج 360°</span>
+      </div>
+      <div style="padding:12px 16px; background:var(--cs); border-bottom:1px solid var(--cb);">
+        <div class="stepper">
+          <div class="step active"><div class="step-dot">🫀</div><span class="step-lbl">الصحة</span></div>
+          <div class="step pending"><div class="step-dot">🏃</div><span class="step-lbl">الحركة</span></div>
+          <div class="step pending"><div class="step-dot">🧠</div><span class="step-lbl">النفسي</span></div>
+          <div class="step pending"><div class="step-dot">🤝</div><span class="step-lbl">الاجتماعي</span></div>
+          <div class="step pending"><div class="step-dot">💼</div><span class="step-lbl">المالي</span></div>
+          <div class="step pending"><div class="step-dot">🌟</div><span class="step-lbl">الخبرة</span></div>
+        </div>
+      </div>
+      <div class="section-strip">
+        <div class="section-strip-inner">
+          <div class="section-strip-meta">
+            <span class="pill">المحور 1 من 6</span>
+          </div>
+          <div class="section-strip-title"><span class="section-icon">🫀</span><h1>الصحة والأمراض المزمنة</h1></div>
+        </div>
+      </div>
+      <div style="padding:16px 16px 8px;">
+        <!-- Q1: answered -->
+        <div class="qcard">
+          <div class="qnum">1</div>
+          <p class="qtext">كيف تقيّم صحتك بشكل عام؟</p>
+          <div class="opt selected"><span class="opt-dot">●</span>جيدة جدًا</div>
+          <div class="opt"><span class="opt-dot">○</span>جيدة</div>
+        </div>
+        <!-- Q2: answered -->
+        <div class="qcard">
+          <div class="qnum">2</div>
+          <p class="qtext">هل لديك أي من الحالات الصحية التالية؟</p>
+          <div class="opt selected"><span class="opt-dot">☑</span>لا توجد</div>
+          <div class="opt"><span class="opt-dot">☐</span>السكري</div>
+        </div>
+        <!-- Q3: NOT answered — error state -->
+        <div class="qcard" style="border-color:#e06060;background:#fdf8f8;">
+          <div class="qnum">3</div>
+          <p class="qtext">إلى أي مدى تلتزم بالأدوية والفحوصات؟</p>
+          <!-- Validation error message -->
+          <div style="background:#fdf0ef;border:1px solid #f5c6c2;border-radius:var(--r-sm);padding:8px 12px;margin-bottom:12px;font-size:13px;color:#b32c1e;">يرجى اختيار إجابة للمتابعة</div>
+          <div class="opt"><span class="opt-dot">○</span>دائمًا</div>
+          <div class="opt"><span class="opt-dot">○</span>غالبًا</div>
+          <div class="opt"><span class="opt-dot">○</span>أحيانًا</div>
+          <div class="opt"><span class="opt-dot">○</span>نادرًا</div>
+        </div>
+      </div>
+      <div class="nav-bar">
+        <div class="nav-inner">
+          <button class="btn btn-ghost btn-sm">← الرئيسية</button>
+          <button class="btn btn-primary">التالي: النشاط والحركة →</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen-label"><span class="screen-num">15</span><br>خطأ التحقق — سؤال غير مجاب</div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div style="text-align:center;padding:48px 24px 32px;border-top:1px solid var(--cb);margin-top:32px;">
+  <div class="logo" style="justify-content:center;margin-bottom:8px;">
+    <div class="logo-mark"><span class="logo-ring r3"></span><span class="logo-ring r2"></span><span class="logo-ring r1"></span><span class="logo-core"></span></div>
+    <span class="logo-text">وهج</span>
+  </div>
+  <p style="font-size:12px;color:var(--ctm);margin-bottom:4px;">منصة وهج الذكية للانتقال الوقائي للتقاعد</p>
+  <p style="font-size:11px;color:var(--ctm);">نماذج تجريبية للعرض • Made with IBM Bob</p>
+</div>
+
+
+</body>
+</html>

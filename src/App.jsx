@@ -7,6 +7,7 @@ import { AnalysisScreen } from './pages/AnalysisScreen';
 import { ResultsDashboard } from './pages/ResultsDashboard';
 import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard.jsx';
 import { AdminImpactDashboard } from './pages/AdminImpactDashboard/AdminImpactDashboard.jsx';
+import { ServicePage } from './pages/ServicePage/ServicePage.jsx';
 
 /**
  * Wraps WelcomeScreen with a location-based key so React fully remounts it
@@ -35,6 +36,7 @@ export function App() {
           <Route path="/results"             element={<ResultsDashboard />} />
           <Route path="/dashboard"           element={<AdminDashboard />} />
           <Route path="/admin-dashboard"     element={<AdminImpactDashboard />} />
+          <Route path="/service/:agentId"    element={<ServicePage />} />
           {/* Catch-all */}
           <Route path="*"                    element={<KeyedWelcomeScreen />} />
         </Routes>

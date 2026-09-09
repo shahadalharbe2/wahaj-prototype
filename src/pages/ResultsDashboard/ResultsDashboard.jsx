@@ -5,7 +5,6 @@ import { WahajLogo, Button } from '../../components';
 import { AgentCard } from './AgentCard';
 import { HumanReviewModal } from './HumanReviewModal';
 import { DOMAIN_META } from '../../data/analysisRules';
-import { ServicePathPanel } from '../../features/ServicePath/ServicePathPanel.jsx';
 import {
   HEALTH_SERVICE_CONFIG,
   PHYSICAL_SERVICE_CONFIG,
@@ -16,7 +15,7 @@ import {
   getOrchestratorServiceConfig,
 } from '../../features/ServicePath/servicePathConfigs.js';
 
-// ── helpers ──────────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function loadAnalysis() {
   try {
     const stored = sessionStorage.getItem('wahaj_analysis');
@@ -36,26 +35,35 @@ const DOMAIN_LABELS_SHORT = {
   overall:       'الأولويات',
 };
 
-/** Build per-agent service path config map from analysis + raw answers */
-function buildServicePathConfigs(agents, rawAnswers) {
+function buildServicePathConfigs(rawAnswers) {
   const raw = rawAnswers ?? {};
-  const expConfig = getExperienceServiceConfig(raw[16], raw[17] ?? []);
   return {
     health:        HEALTH_SERVICE_CONFIG,
     physical:      PHYSICAL_SERVICE_CONFIG,
     psychological: PSYCHOLOGICAL_SERVICE_CONFIG,
     social:        SOCIAL_SERVICE_CONFIG,
     financial:     FINANCIAL_SERVICE_CONFIG,
-    experience:    expConfig,
+    experience:    getExperienceServiceConfig(raw[16], raw[17] ?? []),
   };
 }
 
+/** Sort agents: high-risk first, then risk, then opportunity, then stable */
+function agentSortScore(agent) {
+  if (agent.type === 'risk' && agent.level === 'high')   return 0;
+  if (agent.type === 'risk' && agent.level === 'moderate') return 1;
+  if (agent.type === 'risk')                               return 2;
+  if (agent.type === 'opportunity')                        return 3;
+  return 4;
+}
+
+// ─── ResultsDashboard ─────────────────────────────────────────────────────────
 export function ResultsDashboard() {
   const navigate = useNavigate();
-  // Lazy initializer reads sessionStorage once on first render — no effect needed
-  const [analysis] = useState(() => loadAnalysis());
-  const [reviewAgent, setReviewAgent] = useState(null); // agent for human-review modal
+  const [analysis]    = useState(() => loadAnalysis());
+  const [reviewAgent, setReviewAgent] = useState(null);
+  const [showAll,     setShowAll]     = useState(false);
 
+  // ── Empty state ──────────────────────────────────────────────────────────
   if (!analysis) {
     return (
       <main className={styles.page}>
@@ -75,19 +83,18 @@ export function ResultsDashboard() {
   }
 
   const { overall, agents, crossInsights, priorities, escalations, rawAnswers } = analysis;
-
-  // Determine top-level escalation for banner
   const hasHumanReview = escalations.length > 0;
-
-  // Build service path configs (personalized for experience agent)
-  const servicePathConfigs = buildServicePathConfigs(agents, rawAnswers);
-
-  // Orchestrator cross-agent service suggestion
+  const servicePathConfigs = buildServicePathConfigs(rawAnswers);
   const orchestratorService = getOrchestratorServiceConfig(agents, rawAnswers ?? {});
+
+  // Sort agents by priority; split top 3 vs rest
+  const sorted    = [...agents].sort((a, b) => agentSortScore(a) - agentSortScore(b));
+  const topAgents = sorted.slice(0, 3);
+  const restAgents = sorted.slice(3);
 
   return (
     <main className={styles.page}>
-      {/* ── Header ────────────────────────────────────────────────────────── */}
+      {/* ── Header ─────────────────────────────────────────────────────── */}
       <header className={styles.header}>
         <WahajLogo size="sm" />
         <div className={styles.headerActions}>
@@ -98,21 +105,20 @@ export function ResultsDashboard() {
       </header>
 
       <div className={styles.inner}>
-        {/* ── Page title ──────────────────────────────────────────────────── */}
+
+        {/* ══ 1. Page title ══════════════════════════════════════════════ */}
         <section className={styles.titleSection}>
           <div className={styles.glowBlob} aria-hidden="true" />
-          <h1 className={styles.pageTitle}>صورتك المتكاملة مع وهج</h1>
+          <h1 className={styles.pageTitle}>نتيجة تقييم وهج 360°</h1>
           <p className={styles.pageSubtitle}>
-            حلّل وهج إجاباتك عبر ستة مجالات مترابطة لتحديد الأولويات والفرص المناسبة
+            حلّل وهج إجاباتك عبر ستة مجالات لتحديد أبرز أولوياتك والفرص المناسبة
             لمرحلة التقاعد.
           </p>
         </section>
 
-        {/* ── SECTION A: Overall Summary ────────────────────────────────── */}
+        {/* ══ 2. ملخص وهج ════════════════════════════════════════════════ */}
         <section className={styles.section} aria-labelledby="summary-heading">
-          <h2 id="summary-heading" className={styles.sectionHeading}>
-            الملخص العام
-          </h2>
+          <h2 id="summary-heading" className={styles.sectionHeading}>ملخص وهج</h2>
           <div className={styles.summaryCard}>
             <p className={styles.summaryText}>{overall.summary}</p>
             {overall.topDomain && (
@@ -138,74 +144,11 @@ export function ResultsDashboard() {
           </div>
         </section>
 
-        {/* ── SECTION B: Six Agent Cards ────────────────────────────────── */}
-        <section className={styles.section} aria-labelledby="agents-heading">
-          <h2 id="agents-heading" className={styles.sectionHeading}>
-            تحليل المجالات الستة
-          </h2>
-          <div className={styles.agentGrid}>
-            {agents.map((agent) => (
-              <AgentCard
-                key={agent.id}
-                agent={agent}
-                onHumanReview={(a) => setReviewAgent(a)}
-                servicePathConfig={servicePathConfigs[agent.id] ?? null}
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* ── SECTION C: Cross-agent insights ─────────────────────────── */}
-        {crossInsights.length > 0 && (
-          <section className={styles.section} aria-labelledby="cross-heading">
-            <h2 id="cross-heading" className={styles.sectionHeading}>
-              ما الذي ربطه وهج؟
-            </h2>
-            <p className={styles.sectionDesc}>
-              لاحظ منسق وهج الذكي هذه الروابط بين مجالات تقييمك.
-            </p>
-            <div className={styles.insightList}>
-              {crossInsights.map((insight) => (
-                <div key={insight.id} className={styles.insightCard}>
-                  <div className={styles.insightDomains}>
-                    {insight.domains.map((d) => (
-                      <span key={d} className={styles.domainTag}>
-                        {DOMAIN_META[d]?.icon ?? ''} {DOMAIN_LABELS_SHORT[d] ?? d}
-                      </span>
-                    ))}
-                  </div>
-                  <p className={styles.insightText}>{insight.conclusion}</p>
-                  <p className={styles.insightIntervention}>
-                    <strong>التدخل المقترح:</strong> {insight.intervention}
-                  </p>
-                  <p className={styles.insightSource}>{insight.evidenceSource}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ── SECTION D: Orchestrator cross-agent service ───────────────── */}
-        <section className={styles.section} aria-labelledby="orch-service-heading">
-          <h2 id="orch-service-heading" className={styles.sectionHeading}>
-            أبرز خدمة يوصي بها وهج لك
-          </h2>
-          <p className={styles.sectionDesc}>
-            بعد تحليل جميع المجالات الستة، اختار منسق وهج الذكي الخدمة التي تخدم أكثر من جانب في تقييمك.
-          </p>
-          <ServicePathPanel
-            config={orchestratorService.config}
-            agentHasHumanReview={false}
-            domainsServed={orchestratorService.domainsServed}
-            crossAgentReason={orchestratorService.crossAgentReason}
-          />
-        </section>
-
-        {/* ── SECTION E: Priorities ─────────────────────────────────────── */}
+        {/* ══ 3. أهم أولوياتك ════════════════════════════════════════════ */}
         {priorities.length > 0 && (
           <section className={styles.section} aria-labelledby="priorities-heading">
             <h2 id="priorities-heading" className={styles.sectionHeading}>
-              أولوياتك مع وهج
+              أهم أولوياتك
             </h2>
             <div className={styles.priorityList}>
               {priorities.map((p, idx) => (
@@ -215,7 +158,70 @@ export function ResultsDashboard() {
           </section>
         )}
 
-        {/* ── SECTION E: Human escalation banner ───────────────────────── */}
+        {/* ══ 4. Top agent cards (sorted by priority) ════════════════════ */}
+        <section className={styles.section} aria-labelledby="agents-heading">
+          <h2 id="agents-heading" className={styles.sectionHeading}>
+            توصيات وهج المقترحة
+          </h2>
+          <p className={styles.sectionDesc}>
+            اختر مسارًا للبدء — كل بطاقة تحتوي على خدمة مصمّمة خصيصًا لك.
+          </p>
+          <div className={styles.agentGrid}>
+            {topAgents.map((agent) => (
+              <AgentCard
+                key={agent.id}
+                agent={agent}
+                onHumanReview={(a) => setReviewAgent(a)}
+                servicePathConfig={servicePathConfigs[agent.id] ?? null}
+                isTopPriority
+              />
+            ))}
+          </div>
+
+          {/* Collapsible secondary agents */}
+          {restAgents.length > 0 && (
+            <div className={styles.secondarySection}>
+              <button
+                className={styles.showAllBtn}
+                onClick={() => setShowAll((v) => !v)}
+                aria-expanded={showAll}
+              >
+                {showAll ? '▲ إخفاء بقية النتائج' : `▼ عرض بقية نتائج وهج (${restAgents.length})`}
+              </button>
+
+              {showAll && (
+                <div className={`${styles.agentGrid} ${styles.agentGridSecondary}`}>
+                  {restAgents.map((agent) => (
+                    <AgentCard
+                      key={agent.id}
+                      agent={agent}
+                      onHumanReview={(a) => setReviewAgent(a)}
+                      servicePathConfig={servicePathConfigs[agent.id] ?? null}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+
+        {/* ══ 5. أبرز خدمة — Orchestrator highlight ══════════════════════ */}
+        <section className={styles.section} aria-labelledby="orch-heading">
+          <h2 id="orch-heading" className={styles.sectionHeading}>
+            أبرز خدمة يوصي بها وهج لك
+          </h2>
+          <p className={styles.sectionDesc}>
+            بعد تحليل جميع المجالات الستة، اختار منسق وهج الخدمة التي تخدم أكثر من جانب في تقييمك.
+          </p>
+          <OrchestratorCard service={orchestratorService} onNavigate={navigate} />
+        </section>
+
+        {/* ══ 6. Cross-agent insights (collapsed by default) ══════════════ */}
+        {crossInsights.length > 0 && (
+          <CrossInsightsSection insights={crossInsights} />
+        )}
+
+        {/* ══ 7. Human escalation banner ══════════════════════════════════ */}
         {hasHumanReview && (
           <section className={styles.section} aria-labelledby="escalation-heading">
             <h2 id="escalation-heading" className={styles.sectionHeading}>
@@ -223,16 +229,14 @@ export function ResultsDashboard() {
             </h2>
             <div className={styles.escalationBanner}>
               <p className={styles.escalationText}>
-                بناءً على إجاباتك، يقترح وهج مراجعة متخصصين في المجالات التالية للحصول على أفضل دعم:
+                بناءً على إجاباتك، يقترح وهج مراجعة متخصصين في المجالات التالية:
               </p>
               <div className={styles.escalationItems}>
                 {escalations.map((e) => (
                   <div key={e.domain} className={styles.escalationItem}>
                     <span className={styles.escalationDomain}>{e.title}</span>
                     {e.specialistType && (
-                      <span className={styles.escalationSpecialist}>
-                        {e.specialistType}
-                      </span>
+                      <span className={styles.escalationSpecialist}>{e.specialistType}</span>
                     )}
                   </div>
                 ))}
@@ -241,7 +245,7 @@ export function ResultsDashboard() {
           </section>
         )}
 
-        {/* ── Footer prototype note ─────────────────────────────────────── */}
+        {/* ══ 8. Prototype note ═══════════════════════════════════════════ */}
         <div className={styles.protoNote} role="note">
           <p>
             <strong>ملاحظة:</strong> نتائج وهج في هذه المرحلة مبنية على قواعد تجريبية
@@ -250,7 +254,7 @@ export function ResultsDashboard() {
           </p>
         </div>
 
-        {/* ── Actions ──────────────────────────────────────────────────── */}
+        {/* ══ 9. Actions ══════════════════════════════════════════════════ */}
         <div className={styles.actions}>
           <Button variant="secondary" size="md" onClick={() => navigate('/assessment')}>
             إعادة التقييم
@@ -261,7 +265,7 @@ export function ResultsDashboard() {
         </div>
       </div>
 
-      {/* ── Human Review Modal ────────────────────────────────────────────── */}
+      {/* Human Review Modal */}
       {reviewAgent && (
         <HumanReviewModal
           agent={reviewAgent}
@@ -273,7 +277,80 @@ export function ResultsDashboard() {
   );
 }
 
-// ── Priority Card sub-component ──────────────────────────────────────────────
+// ─── Orchestrator highlight card ──────────────────────────────────────────────
+function OrchestratorCard({ service, onNavigate }) {
+  const { config, domainsServed, crossAgentReason } = service;
+  if (!config) return null;
+
+  return (
+    <div className={styles.orchCard}>
+      <div className={styles.orchCardHeader}>
+        <span className={styles.orchIcon} aria-hidden="true">⟳</span>
+        <div>
+          <p className={styles.orchCardTitle}>{config.serviceName}</p>
+          {crossAgentReason && (
+            <p className={styles.orchCardReason}>{crossAgentReason}</p>
+          )}
+        </div>
+      </div>
+
+      {domainsServed && domainsServed.length > 0 && (
+        <div className={styles.orchDomains}>
+          {domainsServed.map((d) => (
+            <span key={d} className={styles.domainTag}>
+              {DOMAIN_META[d]?.icon ?? ''} {DOMAIN_LABELS_SHORT[d] ?? d}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <button
+        className={styles.orchCtaBtn}
+        onClick={() => onNavigate(`/service/${config.sourceAgentId ?? config.agentId ?? 'physical'}`)}
+      >
+        ابدأ الخدمة المقترحة ←
+      </button>
+    </div>
+  );
+}
+
+// ─── Cross Insights collapsible section ──────────────────────────────────────
+function CrossInsightsSection({ insights }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className={styles.section} aria-labelledby="cross-heading">
+      <button
+        id="cross-heading"
+        className={styles.showAllBtn}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+      >
+        {open ? '▲' : '▼'} {open ? 'إخفاء' : 'عرض'} ما ربطه وهج بين المجالات
+      </button>
+      {open && (
+        <div className={styles.insightList}>
+          {insights.map((insight) => (
+            <div key={insight.id} className={styles.insightCard}>
+              <div className={styles.insightDomains}>
+                {insight.domains.map((d) => (
+                  <span key={d} className={styles.domainTag}>
+                    {DOMAIN_META[d]?.icon ?? ''} {DOMAIN_LABELS_SHORT[d] ?? d}
+                  </span>
+                ))}
+              </div>
+              <p className={styles.insightText}>{insight.conclusion}</p>
+              <p className={styles.insightIntervention}>
+                <strong>التدخل المقترح:</strong> {insight.intervention}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+// ─── Priority Card ────────────────────────────────────────────────────────────
 function PriorityCard({ priority, rank }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -310,8 +387,6 @@ function PriorityCard({ priority, rank }) {
             <dd>{priority.why}</dd>
             <dt>المجالات المرتبطة:</dt>
             <dd>{priority.domains.map((d) => DOMAIN_META[d]?.label ?? d).join(' + ')}</dd>
-            <dt>فئة المصدر:</dt>
-            <dd>{priority.evidenceSource}</dd>
             {priority.additionalContext && (
               <>
                 <dt>ملاحظتك:</dt>

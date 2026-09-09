@@ -144,8 +144,98 @@
 .agentGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-5);
+  gap: var(--space-4);
 }
+
+.agentGridSecondary {
+  margin-top: var(--space-4);
+  opacity: 0.92;
+}
+
+/* ── Secondary section / Show all button ─────────────────────────────── */
+.secondarySection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.showAllBtn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-brand-primary);
+  cursor: pointer;
+  align-self: center;
+  transition: background var(--transition-fast);
+}
+
+.showAllBtn:hover {
+  background: var(--color-surface-alt);
+}
+
+/* ── Orchestrator highlight card ──────────────────────────────────────── */
+.orchCard {
+  background: linear-gradient(135deg, var(--color-surface-alt) 0%, var(--color-surface) 60%);
+  border: 1.5px solid var(--color-brand-light);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.orchCardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.orchIcon {
+  font-size: 24px;
+  color: var(--color-brand-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.orchCardTitle {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+
+.orchCardReason {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-relaxed);
+  margin: 0;
+}
+
+.orchDomains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.orchCtaBtn {
+  background: var(--color-brand-primary);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background var(--transition-fast);
+}
+
+.orchCtaBtn:hover { background: var(--color-brand-accent); }
 
 /* ── Cross Insights ─────────────────────────────────────────────────── */
 .insightList {
